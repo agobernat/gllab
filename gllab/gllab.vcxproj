@@ -118,6 +118,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,8 +143,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="physicsengine.cpp" />
+    <ClCompile Include="resourcemanager.cpp" />
+    <ClCompile Include="sprite.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="transformations.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gameobject.hpp" />
+    <ClInclude Include="macros.hpp" />
+    <ClInclude Include="physicsengine.hpp" />
+    <ClInclude Include="resourcemanager.hpp" />
+    <ClInclude Include="sprite.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="5.1.transform.frag" />
+    <None Include="5.1.transform.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
