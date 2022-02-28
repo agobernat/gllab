@@ -73,6 +73,8 @@ int main()
     Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec2(0, 0);
 
+    
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
@@ -118,11 +120,15 @@ int main()
 	
 	
 
+    //glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+    //glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+
+
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use(); 
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
+    ourShader.setInt("texture2", 0);
+    ourShader.setInt("texture1", 1);
 
 	prevt = (float)glfwGetTime();
 	start = prevt;
@@ -145,6 +151,9 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
+
+
+        
 
 
 
