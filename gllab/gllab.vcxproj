@@ -159,6 +159,7 @@
     <ClInclude Include="sprite.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="3d1st.vert" />
     <None Include="5.1.transform.frag" />
     <None Include="5.1.transform.vert" />
   </ItemGroup>

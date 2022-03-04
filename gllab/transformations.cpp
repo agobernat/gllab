@@ -10,7 +10,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 //#include <learnopengl/filesystem.h>
-#include <shader_s.h>
+#include <shader.h>
 
 #include <iostream>
 #include "resourcemanager.hpp"
@@ -70,7 +70,8 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
+    Shader ourShader("3d1st.vert", "5.1.transform.frag");
+    //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec2(0, 0);
 
     
@@ -120,15 +121,38 @@ int main()
 	
 	
 
+
+
+
+
+    /*glm::mat4 model = glm::mat4(1.0f);
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+
+    glm::mat4 view = glm::mat4(1.0f);
+    // note that we're translating the scene in the reverse direction of where we want to move
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+
+    int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));*/
+
+
+
+
     //glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
     //glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+
+
 
 
     // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
     // -------------------------------------------------------------------------------------------
     ourShader.use(); 
     ourShader.setInt("texture2", 0);
-    ourShader.setInt("texture1", 1);
+    //ourShader.setInt("texture1", 1);
 
 	prevt = (float)glfwGetTime();
 	start = prevt;
@@ -147,8 +171,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+        //glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
 
@@ -158,14 +182,47 @@ int main()
 
 
         // create transformations
-        glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-        transform = glm::translate(transform, glm::vec3(-position.x, position.y, 0.0f));
+        //glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        //transform = glm::translate(transform, glm::vec3(-position.x, position.y, 0.0f));
         //transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+
+
 
         // get matrix's uniform location and set matrix
         ourShader.use();
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
+
+        glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        float rot = position.y * 100;
+        model = glm::rotate(model, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+        // retrieve the matrix uniform locations
+        unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
+        unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
+        // pass them to the shaders (3 different ways)
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
+        ourShader.setMat4("projection", projection);
+
+
+
+
+
+
+
+
+
+
+
+
+        //unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        //glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
 
         // render container
         glBindVertexArray(VAO);
@@ -256,6 +313,7 @@ void countfps()
 {
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
+        std::cout << "rotation:" << position.y / 360 << std::endl;
 		std::cout << fpscounter + 1 << " fps" << std::endl;
 		fpscounter = 0;
 		start = (float)glfwGetTime();

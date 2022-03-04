@@ -67,5 +67,8 @@
     <None Include="5.1.transform.vert">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="3d1st.vert">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
