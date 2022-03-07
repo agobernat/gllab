@@ -2,25 +2,24 @@
 #define _GAME_OBJECT_H_
 
 #include "sprite.hpp"
+#include <glm/glm.hpp>
 
 class GameObject
 {
 
 private:
-	int x, y, h, w, dx, dy, dh, dw;
-	unsigned int texture;
-	double rotation;
+	glm::dvec3 position, scale, rotation, translate;
 	Sprite sprite;
 	
 
 public:
 	GameObject();
 	~GameObject();
-	void setTexture(unsigned int texture);
-	void setSize(int h, int w);
-	void setPosition(int x, int y);	
-	void setRotation(double rad);
-	void rotate(double rad);
+
+	void setScale(glm::dvec3 scale);
+	void setPosition(glm::dvec3 pos);	
+	//void setRotation(glm::dvec3 rot);
+	void rotate(double rot, glm::dvec3 axis);
 	void draw();
 	void setSprite(Sprite sprite);
 

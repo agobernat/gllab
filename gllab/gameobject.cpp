@@ -1,31 +1,22 @@
 #include "gameobject.hpp"
 #include "macros.hpp"
 
-void GameObject::setTexture(unsigned int texture)
+
+void GameObject::setScale(glm::dvec3 scale)
 {
-	this->texture = texture;
+	this->scale = scale;
 }
-void GameObject::setSize(int h, int w)
+void GameObject::setPosition(glm::dvec3 pos)
 {
-	this->h = h;
-	this->w = w;
-}
-void GameObject::setPosition(int x, int y)
-{
-	this->x = x;
-	this->y = y;
-}
-void GameObject::setRotation(double rad)
-{
-	this->rotation = rad;
+	this->position = pos;
 }
 
 void GameObject::setSprite(Sprite sprite) {
 	this->sprite = sprite;
 }
 
-void GameObject::rotate(double rad) {
-	this->rotation = this->rotation + rad > 2 * PI ? this->rotation + rad - 2 * PI : this->rotation + rad;
+void GameObject::rotate(double rad, glm::dvec3 axis) {
+	
 }
 
 void GameObject::draw()
