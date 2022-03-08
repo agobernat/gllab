@@ -26,7 +26,6 @@ unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, 
 	
 
 	std::string rootdir = std::filesystem::current_path().string();
-	
 
 	rootdir.append("\\");
 	rootdir.append(filename);
