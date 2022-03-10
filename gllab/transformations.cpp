@@ -16,6 +16,7 @@
 #include "resourcemanager.hpp"
 #include "macros.hpp"
 #include "sprite.hpp"
+#include "terraingen.hpp"
 
 
 
@@ -57,7 +58,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+	//glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
 
 
@@ -99,15 +100,20 @@ int main()
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2;
+    unsigned int texture1, texture2, texture3;
     // texture 1
     // ---------
 	//unsigned char *data;
 	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB);
     texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA);
+    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB);
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
+
+
+    Shader terrainshader("3d1st.vert", "5.1.transform.frag");
+    TerrainGen terrainspr = TerrainGen(terrainshader);
     
 
 	prevt = (float)glfwGetTime();
@@ -124,8 +130,51 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        ourShader.use();
+        
+        kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, view);
         box.Draw(position, texture1, view);
-        kid.Draw(glm::vec3(-position.x, position.y, 0), texture2, view);
+
+        
+
+        kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
+
+        
+
+        glm::vec3 axis(0.0f, 1.0f, 0.0f);
+        //glm::vec3 pos(0.0f, 0.0f, 0.0f);
+        glm::vec3 pos2(2.0f, 0.0f, -2.0f);
+        glm::mat4 transform = {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+
+        glm::mat4 rot = {
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, glm::cos(glm::radians(45.0f)), -glm::sin(glm::radians(45.0f)), 0.0f,
+            0.0f, glm::sin(glm::radians(45.0f)), glm::cos(glm::radians(45.0f)), 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f
+        };
+        transform *= rot;
+        for (size_t i = 0; i < 64; i++)
+        {
+            glm::vec3 pos(i / 8 * 1.0f - 4.0f, -2.0f, (i % 8) * 1.0f - 4.0f);
+            terrainspr.draw(pos, axis, 0.0f, view, texture3, transform);
+        }
+
+        
+        
+        
+        
+        //terrainspr.draw(pos, axis, 0.0f, view, texture3, transform);
+        //terrainspr.draw(pos, axis, 0.0f, view, texture3, transform2);
+        
+        
+       
+        
+        //ourShader.use();
         
 		//glFlush();
         glfwSwapBuffers(window);
@@ -217,7 +266,7 @@ void countfps()
 {
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
-        std::cout << "rotation:" << position.y / 360 << std::endl;
+        std::cout << "position:" << position.x << std::endl;
 		std::cout << fpscounter + 1 << " fps" << std::endl;
 		fpscounter = 0;
 		start = (float)glfwGetTime();

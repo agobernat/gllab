@@ -153,6 +153,7 @@
     <ClCompile Include="resourcemanager.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="terraingen.cpp" />
     <ClCompile Include="transformations.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,11 +162,14 @@
     <ClInclude Include="physicsengine.hpp" />
     <ClInclude Include="resourcemanager.hpp" />
     <ClInclude Include="sprite.hpp" />
+    <ClInclude Include="terraingen.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="3d1st.vert" />
     <None Include="5.1.transform.frag" />
     <None Include="5.1.transform.vert" />
+    <None Include="terrain.frag" />
+    <None Include="terrain.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
