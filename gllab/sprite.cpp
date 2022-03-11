@@ -109,12 +109,14 @@ void Sprite::initRenderData()
 
 void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
 {
+    shader.use();
     glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
     //glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
     float rot = position.y * 100;
+    model = glm::translate(model, glm::vec3(-position.x, 0.0f, -3.0f));
     model = glm::rotate(model, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
-    view = glm::translate(view, glm::vec3(-position.x, 0.0f, -3.0f));
+    
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     // retrieve the matrix uniform locations
     unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
@@ -125,9 +127,9 @@ void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
     // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
-
-    shader.use();
-    shader.setInt("texture", 0);
+    shader.setMat4("model", model);
+    
+    //shader.setInt("texture", 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
