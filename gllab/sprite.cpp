@@ -114,7 +114,7 @@ void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
     //glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
     float rot = position.y * 100;
-    model = glm::translate(model, glm::vec3(-position.x, 0.0f, -3.0f));
+    model = glm::translate(model, glm::vec3(-position.x, position.y, position.z));
     model = glm::rotate(model, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
     
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);

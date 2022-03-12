@@ -9,6 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <stdlib.h>
+#include <time.h>
+
 //#include <learnopengl/filesystem.h>
 #include <shader.h>
 
@@ -25,6 +28,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void countfps();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+float* genheightmap(int size);
+void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 
 
 // settings
@@ -34,6 +39,7 @@ const unsigned int SCR_HEIGHT = 600;
 glm::vec3 cameraPos;
 glm::vec3 cameraFront;
 glm::vec3 cameraUp;
+
 
 
 bool keys[1024];
@@ -48,7 +54,7 @@ float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 re
 float pitch = 0.0f;
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
-float fov = 45.0f;
+float fov = 80.0f;
 
 int main()
 {
@@ -60,7 +66,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
-
+    srand(time(NULL));
 
     // glfw window creation
     // --------------------
@@ -76,7 +82,7 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetCursorPosCallback(window, mouse_callback_init);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -94,9 +100,9 @@ int main()
     //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec3(0, 0, 0);
 
-    cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-    cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    cameraPos = glm::vec3(0.0f, -5.0f, 0.0f);
+    cameraFront = glm::vec3(0.0f, 1.0f, 0.0f);
+    cameraUp = glm::vec3(0.0f, 0.0f, 1.0f);
 
     // load and create a texture 
     // -------------------------
@@ -111,9 +117,12 @@ int main()
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
+    int hmapsize = 16;
+    float* heightmap = genheightmap(hmapsize);
 
-    Shader terrainshader("3d1st.vert", "5.1.transform.frag");
-    TerrainGen terrainspr = TerrainGen(terrainshader);
+
+    Shader terrainshader("terrain.vert", "terrain.frag");
+    TerrainGen terrainspr = TerrainGen(terrainshader, hmapsize);
     
 
 	prevt = (float)glfwGetTime();
@@ -138,45 +147,9 @@ int main()
         
 
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
-
+        terrainspr.draw(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, heightmap, hmapsize);
         
 
-        glm::vec3 axis(0.0f, 1.0f, 0.0f);
-        //glm::vec3 pos(0.0f, 0.0f, 0.0f);
-        glm::vec3 pos2(2.0f, 0.0f, -2.0f);
-        glm::mat4 transform = {
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, 1.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 1.0f, 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
-
-        glm::mat4 rot = {
-            1.0f, 0.0f, 0.0f, 0.0f,
-            0.0f, glm::cos(glm::radians(45.0f)), -glm::sin(glm::radians(45.0f)), 0.0f,
-            0.0f, glm::sin(glm::radians(45.0f)), glm::cos(glm::radians(45.0f)), 0.0f,
-            0.0f, 0.0f, 0.0f, 1.0f
-        };
-        transform *= rot;
-        for (size_t i = 0; i < 64; i++)
-        {
-            glm::vec3 pos(i / 8 * 1.0f - 4.0f, -2.0f, (i % 8) * 1.0f - 4.0f);
-            terrainspr.draw(pos, axis, 0.0f, view, texture3, transform);
-        }
-
-        
-        
-        
-        
-        //terrainspr.draw(pos, axis, 0.0f, view, texture3, transform);
-        //terrainspr.draw(pos, axis, 0.0f, view, texture3, transform2);
-        
-        
-       
-        
-        //ourShader.use();
-        
-		//glFlush();
         glfwSwapBuffers(window);
 
         glfwPollEvents();
@@ -226,7 +199,7 @@ void processInput(GLFWwindow *window)
 		position.y -= dts;
 	}
 
-    const float cameraSpeed = 2.5f * dts; // adjust accordingly
+    const float cameraSpeed = 5.0f * dts; // adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -278,14 +251,21 @@ void countfps()
 	
 }
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+    lastX = xpos;
+    lastY = ypos;
+
+
+    glfwSetCursorPosCallback(window, mouse_callback);
+}
+
+void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
 
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
@@ -306,8 +286,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
     glm::vec3 direction;
     direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = sin(glm::radians(pitch));
-    direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    direction.y = -sin(glm::radians(yaw)) * cos(glm::radians(pitch));  
+    direction.z = sin(glm::radians(pitch));
     cameraFront = glm::normalize(direction);
 }
 
@@ -319,4 +299,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+float* genheightmap(int size) {
+    float* arr = new float[size * size];
+    for (size_t i = 0; i < size; i++)
+    {
+        for (size_t j = 0; j < size; j++)
+        {
+            arr[i * size + j] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        }
+    }
+    return arr;
 }
