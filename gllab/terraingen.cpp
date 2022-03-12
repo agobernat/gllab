@@ -49,7 +49,7 @@ void TerrainGen::init() {
 }
 
 
-void TerrainGen::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, float* hmap, int hmapsize) {
+void TerrainGen::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture) {
 
     shader.use();
     glm::mat4 model = glm::mat4(1.0f);
@@ -57,21 +57,22 @@ void TerrainGen::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view
     // glm::mat4 view = glm::mat4(1.0f);
     glm::mat4 projection = glm::mat4(1.0f);
 
-    model = glm::translate(model, pos);
+    
     model = glm::rotate(model, glm::radians(angle), axis);
-
+    model = glm::scale(model, glm::vec3(0.8f, 0.8f, 1.0f));
+    model = glm::translate(model, pos);
     projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
 
     // retrieve the matrix uniform locations
-    unsigned int hmapLoc = glGetUniformLocation(shader.ID, "heightmap");
-    unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "heightmapsize");
+    GLuint hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
+    //unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "heightmapsize");
 
 
     unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
     unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");
     // pass them to the shaders (3 different ways)
-    glUniform1i(hmapsizeLoc, hmapsize);
-    glUniform1fv(hmapLoc, hmapsize * hmapsize, hmap);
+    glUniform1i(hmapsizeLoc, size);
+    //glUniform1fv(hmapLoc, hmapsize * hmapsize, hmap);
 
 
     glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -84,11 +85,14 @@ void TerrainGen::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view
 
 
 
-
-    //shader.setInt("texture", 2);
+    shader.setInt("texture1", 0);
+    shader.setInt("hmap", 1);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, hmap);
 
 
     glBindVertexArray(this->quadVAO);
@@ -116,6 +120,30 @@ void TerrainGen::allocvertexarray(int size) {
         }
     }*/
 }
+
+void TerrainGen::loadHmapAsTexture(float* hmap, int hmapsize) {
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    // load image, create texture and generate mipmaps
+
+    
+    
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, hmapsize, hmapsize, 0, GL_RED, GL_FLOAT, hmap);
+    glGenerateMipmap(GL_TEXTURE_2D);
+   
+    
+    this->hmap = texture;
+}
+
+
 
 void TerrainGen::genvertex(float* vert, int size) {
     const int triglen = 15 * 2;

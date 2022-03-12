@@ -8,13 +8,15 @@ out vec2 TexCoord;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
-uniform float heightmap[16*16];
-uniform int heightmapsize;
+
+uniform sampler2D hmap;
+uniform int hmapsize;
 
 void main()
 {
     // note that we read the multiplication from right to left
-    gl_Position = projection * view * model * vec4(aPos.xy, heightmap[int(aPos.x + 0.5)*heightmapsize + int(aPos.y + 0.5)], 1.0);
+    vec4 hmapAstex = texture(hmap, vec2(aPos.x/hmapsize, aPos.y/hmapsize));
+    gl_Position = projection * view * model * vec4(aPos.xy, hmapAstex.r, 1.0f);
     TexCoord = vec2(aTexCoord.x, aTexCoord.y);
     
 }

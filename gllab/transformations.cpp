@@ -106,23 +106,26 @@ int main()
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2, texture3;
+    unsigned int texture1, texture2, texture3, texture4, texture5;
     // texture 1
     // ---------
 	//unsigned char *data;
-	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB);
-    texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA);
-    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB);
+	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB, GL_NEAREST);
+    texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA, GL_NEAREST);
+    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR);
+    texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_NEAREST);
+    texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR);
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 16;
+    int hmapsize = 256;
     float* heightmap = genheightmap(hmapsize);
 
 
     Shader terrainshader("terrain.vert", "terrain.frag");
     TerrainGen terrainspr = TerrainGen(terrainshader, hmapsize);
+    terrainspr.loadHmapAsTexture(heightmap, hmapsize);
     
 
 	prevt = (float)glfwGetTime();
@@ -147,7 +150,7 @@ int main()
         
 
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
-        terrainspr.draw(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, heightmap, hmapsize);
+        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5);
         
 
         glfwSwapBuffers(window);
@@ -208,10 +211,10 @@ void processInput(GLFWwindow *window)
         cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
-
-
-
-
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraUp;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraUp;
 	
 	countfps();
 
@@ -239,8 +242,8 @@ void countfps()
 {
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
-        std::cout << "position:" << position.x << std::endl;
-		std::cout << fpscounter + 1 << " fps" << std::endl;
+        //std::cout << "position:" << position.x << std::endl;
+		//std::cout << fpscounter + 1 << " fps" << std::endl;
 		fpscounter = 0;
 		start = (float)glfwGetTime();
 	}
@@ -301,6 +304,19 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void printhmap(float* hmap, int size) {
+    for (size_t i = 0; i < size; i++)
+    {
+        for (size_t j = 0; j < size; j++)
+        {
+            std::cout << hmap[i * size + j] << std::endl;
+        }
+        std::cout << std::endl;
+    }
+    
+
+}
+
 float* genheightmap(int size) {
     float* arr = new float[size * size];
     for (size_t i = 0; i < size; i++)
@@ -310,5 +326,7 @@ float* genheightmap(int size) {
             arr[i * size + j] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
         }
     }
+    //printhmap(arr, size);
     return arr;
 }
+
