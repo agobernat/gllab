@@ -42,8 +42,14 @@
     <ClCompile Include="gameobject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terrain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="terraingen.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp">
+      <Filter>Imports</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sprite.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terraingen.hpp">

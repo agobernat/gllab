@@ -19,6 +19,7 @@
 #include "resourcemanager.hpp"
 #include "macros.hpp"
 #include "sprite.hpp"
+#include "terrain.hpp"
 #include "terraingen.hpp"
 
 
@@ -120,11 +121,16 @@ int main()
     Sprite kid = Sprite(ourShader);
 
     int hmapsize = 256;
-    float* heightmap = genheightmap(hmapsize);
+    TerrainGen generetor = TerrainGen();
+    float* heightmap = new float[hmapsize * hmapsize];
+    generetor.GenerateHmap(heightmap, hmapsize);
+        //genheightmap(hmapsize);
+
+    
 
 
     Shader terrainshader("terrain.vert", "terrain.frag");
-    TerrainGen terrainspr = TerrainGen(terrainshader, hmapsize);
+    Terrain terrainspr = Terrain(terrainshader, hmapsize);
     terrainspr.loadHmapAsTexture(heightmap, hmapsize);
     
 

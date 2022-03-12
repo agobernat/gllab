@@ -148,11 +148,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="gameobject.cpp" />
+    <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="physicsengine.cpp" />
     <ClCompile Include="resourcemanager.cpp" />
     <ClCompile Include="sprite.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="terrain.cpp" />
     <ClCompile Include="terraingen.cpp" />
     <ClCompile Include="transformations.cpp" />
   </ItemGroup>
@@ -162,6 +164,7 @@
     <ClInclude Include="physicsengine.hpp" />
     <ClInclude Include="resourcemanager.hpp" />
     <ClInclude Include="sprite.hpp" />
+    <ClInclude Include="terrain.hpp" />
     <ClInclude Include="terraingen.hpp" />
   </ItemGroup>
   <ItemGroup>
