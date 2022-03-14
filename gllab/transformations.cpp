@@ -34,8 +34,7 @@ void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+
 
 glm::vec3 cameraPos;
 glm::vec3 cameraFront;
@@ -53,8 +52,8 @@ float start;
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
 float pitch = 0.0f;
-float lastX = 800.0f / 2.0;
-float lastY = 600.0 / 2.0;
+float lastX = SCR_WIDTH / 2.0;
+float lastY = SCR_HEIGHT / 2.0;
 float fov = 80.0f;
 
 int main()
@@ -124,9 +123,6 @@ int main()
     TerrainGen generetor = TerrainGen();
     float* heightmap = new float[hmapsize * hmapsize];
     generetor.GenerateHmap(heightmap, hmapsize);
-        //genheightmap(hmapsize);
-
-    
 
 
     Shader terrainshader("terrain.vert", "terrain.frag");
@@ -249,7 +245,7 @@ void countfps()
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		//std::cout << fpscounter + 1 << " fps" << std::endl;
+		std::cout << fpscounter + 1 << " fps" << std::endl;
 		fpscounter = 0;
 		start = (float)glfwGetTime();
 	}
@@ -321,18 +317,5 @@ void printhmap(float* hmap, int size) {
     }
     
 
-}
-
-float* genheightmap(int size) {
-    float* arr = new float[size * size];
-    for (size_t i = 0; i < size; i++)
-    {
-        for (size_t j = 0; j < size; j++)
-        {
-            arr[i * size + j] = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        }
-    }
-    //printhmap(arr, size);
-    return arr;
 }
 

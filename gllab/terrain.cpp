@@ -4,6 +4,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "macros.hpp"
 
 Terrain::Terrain(Shader& shader, int size) : shader(shader), size(size) { 
     vertexarray = nullptr;
@@ -19,28 +20,38 @@ Terrain::~Terrain()
 
 void Terrain::init() {
     // configure VAO/VBO
-    unsigned int VBO;
     allocvertexarray(size);
 
+    unsigned int VBO, EBO;
     glGenVertexArrays(1, &this->quadVAO);
     glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    
 
-    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (size - 1) * (size - 1) * 30, vertexarray, GL_DYNAMIC_DRAW);
-
+  
 
     glBindVertexArray(this->quadVAO);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size * size * 2, vertexarray, GL_DYNAMIC_DRAW);
+
+    
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (size - 1) * (size - 1) * 6, indexarray, GL_DYNAMIC_DRAW);
+
+
+    
+
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+
     // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    //glEnableVertexAttribArray(1);
 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -59,9 +70,9 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
     
     model = glm::rotate(model, glm::radians(angle), axis);
-    model = glm::scale(model, glm::vec3(0.8f, 0.8f, 1.0f));
+    model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
     model = glm::translate(model, pos);
-    projection = glm::perspective(glm::radians(45.0f), (float)800 / (float)600, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     // retrieve the matrix uniform locations
     GLuint hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
@@ -82,9 +93,6 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
     shader.setMat4("view", view);
     shader.setMat4("model", model);
 
-
-
-
     shader.setInt("texture1", 0);
     shader.setInt("hmap", 1);
 
@@ -96,25 +104,24 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
 
     glBindVertexArray(this->quadVAO);
-    glDrawArrays(GL_TRIANGLES, 0, (size - 1) * (size - 1) * 6);
+    glDrawElements(GL_TRIANGLES, (size - 1) * (size - 1) * 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
-void Terrain::allocvertexarray(int size) {
+void Terrain::allocvertexarray(unsigned int size) {
     if (vertexarray != nullptr)
     {
         return;
     }
-    vertexarray = new float[(size - 1) * (size - 1) * 30];
-    genvertex(vertexarray, size);
-    /*for (size_t i = 0; i < (size - 1) * (size - 1) * 30; i++)
+    vertexarray = new float[size * size * 2];
+    indexarray = new unsigned int[(size - 1) * (size - 1) * 6];
+    genvertex(vertexarray, indexarray, size);
+
+    /*for (size_t i = 0; i < (size - 1) * (size - 1) * 6; i++)
     {
-        std::cout << vertexarray[i] << ", ";
-        if (i % 5 == 4)
-        {
-            std::cout << std::endl;
-        }
-        if (i % (30) == (30 - 1))
+        std::cout << indexarray[i] << ", ";
+
+        if (i % (6) == (6 - 1))
         {
             std::cout << std::endl;
         }
@@ -145,7 +152,7 @@ void Terrain::loadHmapAsTexture(float* hmap, int hmapsize) {
 
 
 
-void Terrain::genvertex(float* vert, int size) {
+/*void Terrain::genvertex(float* vert, int size) {
     const int triglen = 15 * 2;
 
     for (size_t i = 0; i < size - 1; i++)
@@ -198,4 +205,35 @@ void Terrain::genvertex(float* vert, int size) {
         }
     }
     
+}*/
+
+
+void Terrain::genvertex(float* vert, unsigned int* ind, unsigned int size) {
+    const unsigned int triglen = 6;
+
+    for (size_t i = 0; i < size; i++)
+    {
+        for (size_t j = 0; j < size; j++)
+        {
+            vert[2 * (i * size + j)] = float(i);
+            vert[2 * (i * size + j) + 1] = float(j);
+        }
+    }
+   //0, 1, 2
+   //1, 2, 3 
+    
+    for (size_t i = 0; i < size - 1; i++)
+    {
+        for (size_t j = 0; j < size - 1; j++)
+        {
+            ind[triglen * (i * (size - 1) + j)] = i * size + j;
+            ind[triglen * (i * (size - 1) + j) + 1] = i * size + j + 1;
+            ind[triglen * (i * (size - 1) + j) + 2] = (i + 1) * size + j;
+
+            ind[triglen * (i * (size - 1) + j) + 3] = i * size + j + 1;
+            ind[triglen * (i * (size - 1) + j) + 4] = (i + 1) * size + j + 1;
+            ind[triglen * (i * (size - 1) + j) + 5] = (i + 1) * size + j;
+        }
+    }
+
 }

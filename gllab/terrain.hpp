@@ -24,10 +24,11 @@ private:
 
     GLuint hmap;
 
-    void genvertex(float* vert, int size);
-    void allocvertexarray(int size);
+    void genvertex(float* vert, unsigned int* ind, unsigned int size);
+    void allocvertexarray(unsigned int size);
 
     float* vertexarray;
+    unsigned int* indexarray;
 };
 
 
