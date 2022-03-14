@@ -106,7 +106,7 @@ int main()
 
     // load and create a texture 
     // -------------------------
-    unsigned int texture1, texture2, texture3, texture4, texture5;
+    unsigned int texture1, texture2, texture3, texture4, texture5, texture6;
     // texture 1
     // ---------
 	//unsigned char *data;
@@ -115,6 +115,7 @@ int main()
     texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR);
     texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_NEAREST);
     texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR);
+    texture5 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_NEAREST);
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
@@ -204,7 +205,13 @@ void processInput(GLFWwindow *window)
 		position.y -= dts;
 	}
 
-    const float cameraSpeed = 5.0f * dts; // adjust accordingly
+    float cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        cameraSpeed = 25.0f * dts;
+    else
+    {
+        cameraSpeed = 5.0f * dts;
+    }// adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -217,6 +224,7 @@ void processInput(GLFWwindow *window)
         cameraPos += cameraSpeed * cameraUp;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraPos -= cameraSpeed * cameraUp;
+    
 	
 	countfps();
 

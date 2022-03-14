@@ -91,5 +91,14 @@
     <None Include="terrain.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="terrain.geom">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="terrain.tesc">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="terrain.tese">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
