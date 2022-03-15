@@ -25,7 +25,7 @@ void Terrain::init() {
     unsigned int VBO, EBO;
     glGenVertexArrays(1, &this->quadVAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    //glGenBuffers(1, &EBO);
     
 
   
@@ -33,12 +33,12 @@ void Terrain::init() {
     glBindVertexArray(this->quadVAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size * size * 2, vertexarray, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (size - 1) * (size - 1) * 8, vertexarray, GL_DYNAMIC_DRAW);
 
     
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (size - 1) * (size - 1) * 6, indexarray, GL_DYNAMIC_DRAW);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (size - 1) * (size - 1) * 6, indexarray, GL_DYNAMIC_DRAW);
 
 
     
@@ -48,6 +48,7 @@ void Terrain::init() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    glPatchParameteri(GL_PATCH_VERTICES, 4);
 
     // texture coord attribute
     //glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -60,7 +61,7 @@ void Terrain::init() {
 }
 
 
-void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture) {
+void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time) {
 
     shader.use();
     glm::mat4 model = glm::mat4(1.0f);
@@ -70,41 +71,36 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
     
     model = glm::rotate(model, glm::radians(angle), axis);
-    model = glm::scale(model, glm::vec3(0.4f, 0.4f, 1.0f));
+    model = glm::scale(model, glm::vec3(4.0f, 4.0f, 1.0f));
     model = glm::translate(model, pos);
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
-    // retrieve the matrix uniform locations
-    GLuint hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
-    //unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "heightmapsize");
 
-
-    unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
-    unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");
-    // pass them to the shaders (3 different ways)
+    unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
     glUniform1i(hmapsizeLoc, size);
-    //glUniform1fv(hmapLoc, hmapsize * hmapsize, hmap);
 
-
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-    // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
     shader.setMat4("model", model);
 
-    shader.setInt("texture1", 0);
-    shader.setInt("hmap", 1);
 
+
+
+    shader.setVec3("lightPos", glm::vec3(glm::sin(time / 20) * 50, 0.0f, glm::cos(time / 20) * 50));
+    shader.setInt("hmap", 0);
+    shader.setInt("texture1", 1);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-
-    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, hmap);
+    
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture);
 
 
     glBindVertexArray(this->quadVAO);
-    glDrawElements(GL_TRIANGLES, (size - 1) * (size - 1) * 6, GL_UNSIGNED_INT, 0);
+    
+    glDrawArrays(GL_PATCHES, 0, 4 * (size - 1) * (size - 1));
+
+    //glDrawElements(GL_TRIANGLES, (size - 1) * (size - 1) * 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 }
 
@@ -113,8 +109,8 @@ void Terrain::allocvertexarray(unsigned int size) {
     {
         return;
     }
-    vertexarray = new float[size * size * 2];
-    indexarray = new unsigned int[(size - 1) * (size - 1) * 6];
+    vertexarray = new float[(size - 1) * (size - 1) * 8];
+    //indexarray = new unsigned int[(size - 1) * (size - 1) * 6];
     genvertex(vertexarray, indexarray, size);
 
     /*for (size_t i = 0; i < (size - 1) * (size - 1) * 6; i++)
@@ -137,8 +133,8 @@ void Terrain::loadHmapAsTexture(float* hmap, int hmapsize) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
 
     
@@ -151,89 +147,48 @@ void Terrain::loadHmapAsTexture(float* hmap, int hmapsize) {
 }
 
 
+void Terrain::loadHmapFromImage(unsigned int texture) {
+    this->hmap = texture;
 
-/*void Terrain::genvertex(float* vert, int size) {
-    const int triglen = 15 * 2;
+}
 
-    for (size_t i = 0; i < size - 1; i++)
-    {
-        for (size_t j = 0; j < size - 1; j++)
-        {
-            vert[triglen * (i * (size - 1) + j)] = float(i);
-            vert[triglen * (i * (size - 1) + j) + 1] = float(j);
-            vert[triglen * (i * (size - 1) + j) + 2] = 0.0f;
-
-            vert[triglen * (i * (size - 1) + j) + 3] = 0.0f;
-            vert[triglen * (i * (size - 1) + j) + 4] = 0.0f;
-
-            vert[triglen * (i * (size - 1) + j) + 5] = float(i) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 6] = float(j);
-            vert[triglen * (i * (size - 1) + j) + 7] = 0.0f;
-                ;               
-            vert[triglen * (i * (size - 1) + j) + 8] = 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 9] = 0.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 10] = float(i);
-            vert[triglen * (i * (size - 1) + j) + 11] = float(j) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 12] = 0.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 13] = 0.0f;
-            vert[triglen * (i * (size - 1) + j) + 14] = 1.0f;
-                          
-                                
-                             
-            vert[triglen * (i * (size - 1) + j) + 15] = float(i) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 16] = float(j);
-            vert[triglen * (i * (size - 1) + j) + 17] = 0.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 18] = 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 19] = 0.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 20] = float(i) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 21] = float(j) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 22] = 0.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 23] = 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 24] = 1.0f;
-                                
-            vert[triglen * (i * (size - 1) + j) + 25] = float(i);
-            vert[triglen * (i * (size - 1) + j) + 26] = float(j) + 1.0f;
-            vert[triglen * (i * (size - 1) + j) + 27] = 0.0f;
-                               
-            vert[triglen * (i * (size - 1) + j) + 28] = 0.0f;
-            vert[triglen * (i * (size - 1) + j) + 29] = 1.0f;
-        }
-    }
-    
-}*/
 
 
 void Terrain::genvertex(float* vert, unsigned int* ind, unsigned int size) {
     const unsigned int triglen = 6;
-
-    for (size_t i = 0; i < size; i++)
+    
+    for (size_t i = 0; i < size - 1; i++)
     {
-        for (size_t j = 0; j < size; j++)
+        for (size_t j = 0; j < size - 1; j++)
         {
-            vert[2 * (i * size + j)] = float(i);
-            vert[2 * (i * size + j) + 1] = float(j);
+            vert[8 * (i * (size - 1) + j)] = float(i);
+            vert[8 * (i * (size - 1) + j) + 1] = float(j);
+
+            vert[8 * (i * (size - 1) + j) + 2] = float(i);
+            vert[8 * (i * (size - 1) + j) + 3] = float(j + 1);
+
+            vert[8 * (i * (size - 1) + j) + 4] = float(i + 1);
+            vert[8 * (i * (size - 1) + j) + 5] = float(j);
+
+            vert[8 * (i * (size - 1) + j) + 6] = float(i + 1);
+            vert[8 * (i * (size - 1) + j) + 7] = float(j + 1);
         }
     }
    //0, 1, 2
    //1, 2, 3 
     
-    for (size_t i = 0; i < size - 1; i++)
-    {
-        for (size_t j = 0; j < size - 1; j++)
-        {
-            ind[triglen * (i * (size - 1) + j)] = i * size + j;
-            ind[triglen * (i * (size - 1) + j) + 1] = i * size + j + 1;
-            ind[triglen * (i * (size - 1) + j) + 2] = (i + 1) * size + j;
-
-            ind[triglen * (i * (size - 1) + j) + 3] = i * size + j + 1;
-            ind[triglen * (i * (size - 1) + j) + 4] = (i + 1) * size + j + 1;
-            ind[triglen * (i * (size - 1) + j) + 5] = (i + 1) * size + j;
-        }
-    }
+    //for (size_t i = 0; i < size - 1; i++)
+    //{
+    //    for (size_t j = 0; j < size - 1; j++)
+    //    {
+    //        ind[triglen * (i * (size - 1) + j)] = i * size + j;
+    //        ind[triglen * (i * (size - 1) + j) + 1] = i * size + j + 1;
+    //        ind[triglen * (i * (size - 1) + j) + 2] = (i + 1) * size + j;
+    //
+    //        ind[triglen * (i * (size - 1) + j) + 3] = i * size + j + 1;
+    //        ind[triglen * (i * (size - 1) + j) + 4] = (i + 1) * size + j + 1;
+    //        ind[triglen * (i * (size - 1) + j) + 5] = (i + 1) * size + j;
+    //    }
+    //}
 
 }

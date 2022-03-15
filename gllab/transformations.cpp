@@ -13,7 +13,7 @@
 #include <time.h>
 
 //#include <learnopengl/filesystem.h>
-#include <shader.h>
+#include <shader_t.h>
 
 #include <iostream>
 #include "resourcemanager.hpp"
@@ -61,8 +61,8 @@ int main()
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	//glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 
@@ -92,11 +92,13 @@ int main()
         return -1;
     }
 
+
     glEnable(GL_DEPTH_TEST);
 
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("3d1st.vert", "5.1.transform.frag");
+    Shader tesTerrainShader("terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
     //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec3(0, 0, 0);
 
@@ -110,25 +112,28 @@ int main()
     // texture 1
     // ---------
 	//unsigned char *data;
-	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB, GL_NEAREST);
-    texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA, GL_NEAREST);
-    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR);
-    texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_NEAREST);
-    texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR);
-    texture5 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_NEAREST);
+	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB, GL_NEAREST, GL_NEAREST);
+    texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA, GL_NEAREST, GL_NEAREST);
+    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR);
+    texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    texture6 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    unsigned int texture7 = ResourceManager::LoadTexture("resources\\textures\\iceland_heightmap.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 256;
+    int hmapsize = 20;
     TerrainGen generetor = TerrainGen();
     float* heightmap = new float[hmapsize * hmapsize];
     generetor.GenerateHmap(heightmap, hmapsize);
 
 
     Shader terrainshader("terrain.vert", "terrain.frag");
-    Terrain terrainspr = Terrain(terrainshader, hmapsize);
+    Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
     terrainspr.loadHmapAsTexture(heightmap, hmapsize);
+    //terrainspr.loadHmapFromImage(texture7);
     
 
 	prevt = (float)glfwGetTime();
@@ -151,9 +156,11 @@ int main()
         box.Draw(position, texture1, view);
 
         
-
+        
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
-        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5);
+        
+        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime());
+        //std::cout << glm::sin(glfwGetTime()) * 50 << ", " << glm::cos(glfwGetTime()) * 50 << std::endl;
         
 
         glfwSwapBuffers(window);
@@ -253,7 +260,8 @@ void countfps()
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		std::cout << fpscounter + 1 << " fps" << std::endl;
+		//std::cout << fpscounter + 1 << " fps" << std::endl;
+        //std::cout << glfwGetTime();
 		fpscounter = 0;
 		start = (float)glfwGetTime();
 	}

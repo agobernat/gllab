@@ -10,7 +10,7 @@
 #include <stb_image.h>
 
 	
-unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, int src_color, int scaling)
+unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, int src_color, int scaling_min, int scaling_max)
 {
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -19,8 +19,8 @@ unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaling);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaling);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, scaling_min);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, scaling_max);
 	// load image, create texture and generate mipmaps
 	int width, height, nrChannels;
 	
