@@ -2,7 +2,7 @@
 
 #extension GL_ARB_explicit_uniform_location : enable
 
-layout (location = 0) in float Height;
+//layout (location = 0) in float Height;
 layout (location = 1) in vec2 TexCoord;
 layout (location = 2) in vec4 Normal;
 layout (location = 3) in vec4 FragPos;

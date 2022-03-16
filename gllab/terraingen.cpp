@@ -30,18 +30,18 @@ TerrainGen::~TerrainGen()
 {
 }
 
-void TerrainGen::GenerateHmap(float* arr, int size) {
+void TerrainGen::GenerateHmap(float* arr, int fromX, int fromY, unsigned int x, unsigned int y) {
     const float flatness = 20.0f;
     const float amplification = 10.0f;
     const int harmonics = 4;
-    for (size_t i = 0; i < size; i++)
+    for (size_t i = 0; i < x; i++)
     {
-        for (size_t j = 0; j < size; j++)
+        for (size_t j = 0; j < y; j++)
         {
-            arr[i * size + j] = amplification * (float)osnoise.eval(i / flatness, j / flatness);
+            arr[i * y + j] = amplification * (float)osnoise.eval((fromX + i) / flatness, (fromY + j) / flatness);
             for (size_t k = 1; k < harmonics; k++)
             {
-                arr[i * size + j] += amplification / k * (float)osnoise.eval(i /  flatness * 2 * k, j /  flatness * 2 * k);
+                arr[i * y + j] += amplification / k * (float)osnoise.eval((fromX + i) /  flatness * k, (fromY + j) /  flatness * k);
             }
             
         }

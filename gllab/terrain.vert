@@ -30,7 +30,7 @@ void main()
     
     gl_Position = vec4(aPos, 0.0f, 1.0);
     
-    TexCoord = vec2((aPos.x + 1) / hmapsize, (aPos.y + 1) / hmapsize);
+    TexCoord = vec2((aPos.x) / hmapsize, (aPos.y) / hmapsize);
     
     
 }

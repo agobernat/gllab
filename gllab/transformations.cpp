@@ -124,15 +124,23 @@ int main()
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 64;
+    int hmapsize = 20;
     TerrainGen generetor = TerrainGen();
-    float* heightmap = new float[(hmapsize + 1) * (hmapsize + 1)];
-    generetor.GenerateHmap(heightmap, hmapsize + 1);
+    float* heightmap = new float[(hmapsize) * (hmapsize)];
+    generetor.GenerateHmap(heightmap, 0, 0, hmapsize, hmapsize);
 
+    for (size_t i = 0; i < hmapsize; i++)
+    {
+        for (size_t j = 0; j < hmapsize; j++)
+        {
+            std::cout << i << "," << j << ":" << heightmap[i * hmapsize + j] << ", ";
+        }
+        std::cout << std::endl;
+    }
 
     Shader terrainshader("terrain.vert", "terrain.frag");
     Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
-    terrainspr.loadHmapAsTexture(heightmap, hmapsize + 1);
+    terrainspr.loadHmapAsTexture(heightmap, hmapsize);
     //terrainspr.loadHmapFromImage(texture7);
     
 
@@ -159,7 +167,7 @@ int main()
         
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
         
-        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime(), cameraPos);
+        terrainspr.draw(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime(), cameraPos);
         //std::cout << glm::sin(glfwGetTime()) * 50 << ", " << glm::cos(glfwGetTime()) * 50 << std::endl;
         
 
@@ -260,7 +268,7 @@ void countfps()
 	if ((float)glfwGetTime() - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		//std::cout << fpscounter + 1 << " fps" << std::endl;
+		std::cout << fpscounter + 1 << " fps" << std::endl;
         //std::cout << glfwGetTime();
 		fpscounter = 0;
 		start = (float)glfwGetTime();

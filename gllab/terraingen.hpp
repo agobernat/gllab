@@ -10,7 +10,7 @@ public:
 	TerrainGen(long long int seed);
 	~TerrainGen();
 
-	void GenerateHmap(float* arr, int size);
+	void GenerateHmap(float* arr, int fromX, int fromY, unsigned int X, unsigned int Y);
 
 private:
 	OpenSimplexNoise::Noise osnoise;

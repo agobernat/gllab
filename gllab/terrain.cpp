@@ -77,7 +77,7 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
 
     unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
-    glUniform1i(hmapsizeLoc, size + 1);
+    glUniform1i(hmapsizeLoc, size);
 
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
@@ -97,7 +97,7 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
     glBindVertexArray(this->quadVAO);
     
-    glDrawArrays(GL_PATCHES, 0, 4 * (size - 1) * (size - 1));
+    glDrawArrays(GL_PATCHES, 0, 4 * size * size);
 
     //glDrawElements(GL_TRIANGLES, (size - 1) * (size - 1) * 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
@@ -129,8 +129,8 @@ void Terrain::loadHmapAsTexture(float* hmap, int hmapsize) {
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
