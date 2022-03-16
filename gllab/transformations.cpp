@@ -70,7 +70,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.2", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", glfwGetPrimaryMonitor(), NULL);
 	if (window == NULL)
     {
@@ -124,15 +124,15 @@ int main()
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 20;
+    int hmapsize = 64;
     TerrainGen generetor = TerrainGen();
-    float* heightmap = new float[hmapsize * hmapsize];
-    generetor.GenerateHmap(heightmap, hmapsize);
+    float* heightmap = new float[(hmapsize + 1) * (hmapsize + 1)];
+    generetor.GenerateHmap(heightmap, hmapsize + 1);
 
 
     Shader terrainshader("terrain.vert", "terrain.frag");
     Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
-    terrainspr.loadHmapAsTexture(heightmap, hmapsize);
+    terrainspr.loadHmapAsTexture(heightmap, hmapsize + 1);
     //terrainspr.loadHmapFromImage(texture7);
     
 
@@ -159,7 +159,7 @@ int main()
         
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
         
-        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime());
+        terrainspr.draw(glm::vec3(-hmapsize / 2.0f, -hmapsize / 2.0f, -2.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime(), cameraPos);
         //std::cout << glm::sin(glfwGetTime()) * 50 << ", " << glm::cos(glfwGetTime()) * 50 << std::endl;
         
 

@@ -11,7 +11,7 @@ public:
     Terrain(Shader& shader, int size);
     ~Terrain();
     void init();
-    void draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time);
+    void draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time, glm::vec3 cameraPos);
     void loadHmapAsTexture(float* hmap, int hmapsize);
     void loadHmapFromImage(unsigned int texture);
     

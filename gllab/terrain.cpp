@@ -61,7 +61,7 @@ void Terrain::init() {
 }
 
 
-void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time) {
+void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time, glm::vec3 cameraPos) {
 
     shader.use();
     glm::mat4 model = glm::mat4(1.0f);
@@ -73,20 +73,19 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
     model = glm::rotate(model, glm::radians(angle), axis);
     model = glm::scale(model, glm::vec3(4.0f, 4.0f, 1.0f));
     model = glm::translate(model, pos);
-    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 
 
     unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
-    glUniform1i(hmapsizeLoc, size);
+    glUniform1i(hmapsizeLoc, size + 1);
 
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
     shader.setMat4("model", model);
 
 
-
-
-    shader.setVec3("lightPos", glm::vec3(glm::sin(time / 20) * 50, 0.0f, glm::cos(time / 20) * 50));
+    shader.setVec3("viewPos", cameraPos);
+    shader.setVec3("lightPos", glm::vec3(glm::sin(time / 10) * 100, 0.0f, glm::abs(glm::cos(time / 10) * 100)));
     shader.setInt("hmap", 0);
     shader.setInt("texture1", 1);
     glActiveTexture(GL_TEXTURE0);
