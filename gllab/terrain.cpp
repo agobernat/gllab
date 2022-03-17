@@ -71,13 +71,13 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
     
     model = glm::rotate(model, glm::radians(angle), axis);
-    model = glm::scale(model, glm::vec3(4.0f, 4.0f, 1.0f));
+    model = glm::scale(model, glm::vec3(128.0f, 128.0f, 1.0f));
     model = glm::translate(model, pos);
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
 
 
     unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");
-    glUniform1i(hmapsizeLoc, size);
+    glUniform1i(hmapsizeLoc, size * 16);
 
     shader.setMat4("projection", projection);
     shader.setMat4("view", view);
@@ -97,7 +97,7 @@ void Terrain::draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, u
 
     glBindVertexArray(this->quadVAO);
     
-    glDrawArrays(GL_PATCHES, 0, 4 * size * size);
+    glDrawArrays(GL_PATCHES, 0, 4 * (size - 1) * (size - 1));
 
     //glDrawElements(GL_TRIANGLES, (size - 1) * (size - 1) * 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

@@ -29,7 +29,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 void countfps();
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-float* genheightmap(int size);
+//float* genheightmap(int size);
 void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 
 
@@ -124,23 +124,39 @@ int main()
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 20;
-    TerrainGen generetor = TerrainGen();
-    float* heightmap = new float[(hmapsize) * (hmapsize)];
-    generetor.GenerateHmap(heightmap, 0, 0, hmapsize, hmapsize);
+    int hmapsize = 16;
+    TerrainGen generetor = TerrainGen(1);
+    float* heightmap = new float[(hmapsize) * (hmapsize) * 256 ];
+    float* heightmap2 = new float[(hmapsize) * (hmapsize) * 256];
+    generetor.GenerateHmap(heightmap, 0, 0, (hmapsize) * 16, (hmapsize) * 16 );
+    generetor.GenerateHmap(heightmap2, -256 + 1, 0, (hmapsize) * 16, (hmapsize) * 16);
 
-    for (size_t i = 0; i < hmapsize; i++)
-    {
-        for (size_t j = 0; j < hmapsize; j++)
-        {
-            std::cout << i << "," << j << ":" << heightmap[i * hmapsize + j] << ", ";
-        }
-        std::cout << std::endl;
-    }
+    float* heightmap3 = new float[(hmapsize) * (hmapsize) * 256];
+    float* heightmap4 = new float[(hmapsize) * (hmapsize) * 256];
+    generetor.GenerateHmap(heightmap3, 0, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
+    generetor.GenerateHmap(heightmap4, -256 + 1, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
+
+    //for (size_t i = 0; i < (hmapsize + 2) * 16; i++)
+    //{
+    //    for (size_t j = 0; j < (hmapsize + 2); j++)
+    //    {
+    //        std::cout << i << "," << j << ":" << heightmap[i * (hmapsize + 2) + j] << ", ";
+    //    }
+    //    std::cout << std::endl;
+    //}
 
     Shader terrainshader("terrain.vert", "terrain.frag");
     Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
-    terrainspr.loadHmapAsTexture(heightmap, hmapsize);
+    terrainspr.loadHmapAsTexture(heightmap, (hmapsize) * 16);
+
+    Terrain terrainspr2 = Terrain(tesTerrainShader, hmapsize);
+    terrainspr2.loadHmapAsTexture(heightmap2, (hmapsize) * 16);
+
+    Terrain terrainspr3 = Terrain(tesTerrainShader, hmapsize);
+    terrainspr3.loadHmapAsTexture(heightmap3, (hmapsize) * 16);
+
+    Terrain terrainspr4 = Terrain(tesTerrainShader, hmapsize);
+    terrainspr4.loadHmapAsTexture(heightmap4, (hmapsize) * 16);
     //terrainspr.loadHmapFromImage(texture7);
     
 
@@ -167,7 +183,12 @@ int main()
         
         kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
         
-        terrainspr.draw(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture5, glfwGetTime(), cameraPos);
+        terrainspr.draw(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        terrainspr2.draw(glm::vec3(0.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        terrainspr3.draw(glm::vec3(-15.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        terrainspr4.draw(glm::vec3(-15.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+
+
         //std::cout << glm::sin(glfwGetTime()) * 50 << ", " << glm::cos(glfwGetTime()) * 50 << std::endl;
         
 

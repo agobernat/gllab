@@ -12,7 +12,7 @@ layout (location = 3) uniform mat4 projection;
 layout (location = 0) in vec2 TextureCoord[];
 
 
-//layout (location = 0) out float Height;
+layout (location = 0) out float Height;
 layout (location = 1) out vec2 TexCoord;
 layout (location = 2) out vec4 Normal;
 layout (location = 3) out vec4 FragPos;
@@ -33,7 +33,7 @@ void main()
     vec2 t1 = (t11 - t10) * u + t10;
     vec2 TexCoord = (t1 - t0) * v + t0;
 
-    float Height = texture(hmap, vec2(TexCoord.x, TexCoord.y)).r;
+    float Height = texture(hmap, vec2(TexCoord.x , TexCoord.y)).r;
     
 
     vec4 p00 = gl_in[0].gl_Position;

@@ -28,7 +28,7 @@ void main()
 	vec3 norm = normalize(Normal.xyz);
 	
 	// ambient
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.6;
     vec3 ambient = ambientStrength * lightColor;
   	
     
@@ -43,7 +43,8 @@ void main()
     vec3 specular = specularStrength * spec * lightColor;
 	
 	vec3 result = (ambient + diffuse + specular);
-    FragColor = vec4(result, 1.0);
+	
+    FragColor = vec4(result + texture(texture1, FragPos.xy / 16).xyz, 1.0);
 	
 	
 	//vec4 texColor = texture(texture1, TexCoord);
