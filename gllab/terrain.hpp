@@ -2,34 +2,48 @@
 
 
 #include "shader.h"
+#include <list>
+#include "terraingen.hpp"
+#include "chunk.hpp"
+#include "camera.hpp"
 
 
-
+class Chunk;
 class Terrain
 {
+    
 public:
-    Terrain(Shader& shader, int size);
+    Terrain(Shader& shader, unsigned int size, unsigned int res, GLuint texture, long long int seed);
+    Terrain(Shader& shader, unsigned int size, unsigned int res, GLuint texture);
     ~Terrain();
     void init();
-    void draw(glm::vec3 pos, glm::vec3 axis, float angle, glm::mat4 view, unsigned int texture, double time, glm::vec3 cameraPos);
-    void loadHmapAsTexture(float* hmap, int hmapsize);
-    void loadHmapFromImage(unsigned int texture);
+    void draw(double time, Camera camera);
     
+    //void loadHmapFromImage(unsigned int texture);
+    void loadChunk(int x, int y);
+    void unloadChunk(int x, int y);
+    TerrainGen generator;
 
 
 
 private:
-    unsigned int quadVAO;
+    
+    GLuint texture;
+    
+
+    std::list<Chunk*> chunklist;
+    std::list<void*> drawlist;
+
+    //unsigned int quadVAO;
     Shader shader;
-    int size;
+    unsigned int size, res;
 
-    GLuint hmap;
+    //GLuint hmap;
 
-    void genvertex(float* vert, unsigned int* ind, unsigned int size);
-    void allocvertexarray(unsigned int size);
+    //void genvertex(float* vert, unsigned int size);
+    //void allocvertexarray(unsigned int size);
 
     float* vertexarray;
-    unsigned int* indexarray;
 };
 
 

@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
+    <ClCompile Include="chunk.cpp" />
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp" />
     <ClCompile Include="main.cpp" />
@@ -159,6 +161,8 @@
     <ClCompile Include="transformations.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.hpp" />
+    <ClInclude Include="chunk.hpp" />
     <ClInclude Include="gameobject.hpp" />
     <ClInclude Include="macros.hpp" />
     <ClInclude Include="physicsengine.hpp" />

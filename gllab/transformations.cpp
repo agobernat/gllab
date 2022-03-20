@@ -21,6 +21,7 @@
 #include "sprite.hpp"
 #include "terrain.hpp"
 #include "terraingen.hpp"
+#include "camera.hpp"
 
 
 
@@ -32,13 +33,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 //float* genheightmap(int size);
 void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 
-
+Camera cam;
 // settings
-
-
-glm::vec3 cameraPos;
-glm::vec3 cameraFront;
-glm::vec3 cameraUp;
 
 
 
@@ -48,13 +44,11 @@ float dts;
 float prevt;
 float start;
 
+float currt;
 
-bool firstMouse = true;
-float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
-float pitch = 0.0f;
-float lastX = SCR_WIDTH / 2.0;
-float lastY = SCR_HEIGHT / 2.0;
-float fov = 80.0f;
+
+
+
 
 int main()
 {
@@ -102,9 +96,7 @@ int main()
     //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec3(0, 0, 0);
 
-    cameraPos = glm::vec3(0.0f, -5.0f, 0.0f);
-    cameraFront = glm::vec3(0.0f, 1.0f, 0.0f);
-    cameraUp = glm::vec3(0.0f, 0.0f, 1.0f);
+
 
     // load and create a texture 
     // -------------------------
@@ -114,7 +106,7 @@ int main()
 	//unsigned char *data;
 	texture1 = ResourceManager::LoadTexture("resources\\textures\\container.jpg", GL_RGB, GL_RGB, GL_NEAREST, GL_NEAREST);
     texture2 = ResourceManager::LoadTexture("resources\\textures\\kid.png", GL_RGBA, GL_RGBA, GL_NEAREST, GL_NEAREST);
-    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR);
+    texture3 = ResourceManager::LoadTexture("resources\\textures\\bricks2.jpg", GL_RGB, GL_RGB, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture6 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
@@ -124,17 +116,23 @@ int main()
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    int hmapsize = 16;
-    TerrainGen generetor = TerrainGen(1);
-    float* heightmap = new float[(hmapsize) * (hmapsize) * 256 ];
-    float* heightmap2 = new float[(hmapsize) * (hmapsize) * 256];
-    generetor.GenerateHmap(heightmap, 0, 0, (hmapsize) * 16, (hmapsize) * 16 );
-    generetor.GenerateHmap(heightmap2, -256 + 1, 0, (hmapsize) * 16, (hmapsize) * 16);
+    cam = Camera(glm::vec3(0.0f, -5.0f, 0.0f),
+                 glm::vec3(0.0f, 1.0f, 0.0f),
+                 glm::vec3(0.0f, 0.0f, 1.0f));
 
-    float* heightmap3 = new float[(hmapsize) * (hmapsize) * 256];
-    float* heightmap4 = new float[(hmapsize) * (hmapsize) * 256];
-    generetor.GenerateHmap(heightmap3, 0, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
-    generetor.GenerateHmap(heightmap4, -256 + 1, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
+    int hmapsize = 16;
+    //TerrainGen generetor = TerrainGen(1);
+    Terrain terrain(tesTerrainShader, hmapsize, 16, texture3);
+    
+    //float* heightmap = new float[(hmapsize) * (hmapsize) * 256 ];
+    //float* heightmap2 = new float[(hmapsize) * (hmapsize) * 256];
+    //generetor.GenerateHmap(heightmap, 0, 0, (hmapsize) * 16, (hmapsize) * 16 );
+    //generetor.GenerateHmap(heightmap2, -256 + 1, 0, (hmapsize) * 16, (hmapsize) * 16);
+    //
+    //float* heightmap3 = new float[(hmapsize) * (hmapsize) * 256];
+    //float* heightmap4 = new float[(hmapsize) * (hmapsize) * 256];
+    //generetor.GenerateHmap(heightmap3, 0, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
+    //generetor.GenerateHmap(heightmap4, -256 + 1, -256 + 1, (hmapsize) * 16, (hmapsize) * 16);
 
     //for (size_t i = 0; i < (hmapsize + 2) * 16; i++)
     //{
@@ -145,19 +143,28 @@ int main()
     //    std::cout << std::endl;
     //}
 
-    Shader terrainshader("terrain.vert", "terrain.frag");
-    Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
-    terrainspr.loadHmapAsTexture(heightmap, (hmapsize) * 16);
-
-    Terrain terrainspr2 = Terrain(tesTerrainShader, hmapsize);
-    terrainspr2.loadHmapAsTexture(heightmap2, (hmapsize) * 16);
-
-    Terrain terrainspr3 = Terrain(tesTerrainShader, hmapsize);
-    terrainspr3.loadHmapAsTexture(heightmap3, (hmapsize) * 16);
-
-    Terrain terrainspr4 = Terrain(tesTerrainShader, hmapsize);
-    terrainspr4.loadHmapAsTexture(heightmap4, (hmapsize) * 16);
+    //Shader terrainshader("terrain.vert", "terrain.frag");
+    //Terrain terrainspr = Terrain(tesTerrainShader, hmapsize);
+    //terrainspr.loadHmapAsTexture(heightmap, (hmapsize) * 16);
+    //
+    //Terrain terrainspr2 = Terrain(tesTerrainShader, hmapsize);
+    //terrainspr2.loadHmapAsTexture(heightmap2, (hmapsize) * 16);
+    //
+    //Terrain terrainspr3 = Terrain(tesTerrainShader, hmapsize);
+    //terrainspr3.loadHmapAsTexture(heightmap3, (hmapsize) * 16);
+    //
+    //Terrain terrainspr4 = Terrain(tesTerrainShader, hmapsize);
+    //terrainspr4.loadHmapAsTexture(heightmap4, (hmapsize) * 16);
     //terrainspr.loadHmapFromImage(texture7);
+
+
+
+    terrain.loadChunk(0, 0);
+    terrain.loadChunk(-1, 0);
+    terrain.loadChunk(0, -1);
+    terrain.loadChunk(-1, -1);
+
+
     
 
 	prevt = (float)glfwGetTime();
@@ -166,27 +173,28 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-		
+        currt = (float)glfwGetTime();
         processInput(window);
 
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+        
         ourShader.use();
         
-        kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, view);
-        box.Draw(position, texture1, view);
+        kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
+        box.Draw(position, texture1, cam.view());
 
         
         
-        kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, view);
+        kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, cam.view());
+        terrain.draw(currt, cam);
         
-        terrainspr.draw(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
-        terrainspr2.draw(glm::vec3(0.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
-        terrainspr3.draw(glm::vec3(-15.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
-        terrainspr4.draw(glm::vec3(-15.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        //terrainspr.draw(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        //terrainspr2.draw(glm::vec3(0.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        //terrainspr3.draw(glm::vec3(-15.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
+        //terrainspr4.draw(glm::vec3(-15.0f, -15.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 0.0f, view, texture3, glfwGetTime(), cameraPos);
 
 
         //std::cout << glm::sin(glfwGetTime()) * 50 << ", " << glm::cos(glfwGetTime()) * 50 << std::endl;
@@ -212,7 +220,7 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-	float currt = (float)glfwGetTime();
+	
 	dts = currt - prevt;
 	prevt = currt;
 
@@ -249,17 +257,19 @@ void processInput(GLFWwindow *window)
         cameraSpeed = 5.0f * dts;
     }// adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraFront;
+        cam.pos += cameraSpeed * cam.front;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraFront;
+        cam.pos -= cameraSpeed * cam.front;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        cam.pos -= glm::normalize(glm::cross(cam.front, cam.up)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        cam.pos += glm::normalize(glm::cross(cam.front, cam.up)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        cameraPos += cameraSpeed * cameraUp;
+        cam.pos += cameraSpeed * cam.up;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-        cameraPos -= cameraSpeed * cameraUp;
+        cam.pos -= cameraSpeed * cam.up;
+    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+        std::cout << cam.front.x << ", " << cam.front.y << ", " << cam.front.z << std::endl;
     
 	
 	countfps();
@@ -286,13 +296,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 int fpscounter = 0;
 void countfps() 
 {
-	if ((float)glfwGetTime() - start > 1.0f)
+	if (currt - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
 		std::cout << fpscounter + 1 << " fps" << std::endl;
         //std::cout << glfwGetTime();
 		fpscounter = 0;
-		start = (float)glfwGetTime();
+		start = currt;
 	}
 	else
 	{
@@ -304,8 +314,8 @@ void countfps()
 void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
-    lastX = xpos;
-    lastY = ypos;
+    cam.lastX = xpos;
+    cam.lastY = ypos;
 
 
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -315,30 +325,9 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
-
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos;
-    lastX = xpos;
-    lastY = ypos;
-
-    float sensitivity = 0.1f;
-    xoffset *= sensitivity;
-    yoffset *= sensitivity;
-
-    yaw += xoffset;
-    pitch += yoffset;
-
-    if (pitch > 89.0f)
-        pitch = 89.0f;
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-
-    glm::vec3 direction;
-    direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-    direction.y = -sin(glm::radians(yaw)) * cos(glm::radians(pitch));  
-    direction.z = sin(glm::radians(pitch));
-    cameraFront = glm::normalize(direction);
+    
+    cam.move(xpos, ypos);
+    
 }
 
 
@@ -349,18 +338,5 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-}
-
-void printhmap(float* hmap, int size) {
-    for (size_t i = 0; i < size; i++)
-    {
-        for (size_t j = 0; j < size; j++)
-        {
-            std::cout << hmap[i * size + j] << std::endl;
-        }
-        std::cout << std::endl;
-    }
-    
-
 }
 
