@@ -110,24 +110,27 @@ int main()
     texture4 = ResourceManager::LoadTexture("resources\\textures\\unknown67.png", GL_RGB, GL_RGBA, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture5 = ResourceManager::LoadTexture("resources\\textures\\metal.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     texture6 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+    unsigned int texture8 = ResourceManager::LoadTexture("resources\\textures\\pbr\\grass\\albedo.png", GL_RGB, GL_RGB, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     unsigned int texture7 = ResourceManager::LoadTexture("resources\\textures\\iceland_heightmap.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    cam = Camera(glm::vec3(0.0f, -5.0f, 0.0f),
+    cam = Camera(glm::vec3(0.0f, -5.0f, 4.0f),
                  glm::vec3(0.0f, 1.0f, 0.0f),
                  glm::vec3(0.0f, 0.0f, 1.0f));
 
     int hmapsize = 16;
-    Terrain terrain(tesTerrainShader, hmapsize, 16, texture3, 1);
+    Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 1);
 
     terrain.loadChunk(0, 0);
     terrain.loadChunk(-1, 0);
     terrain.loadChunk(0, -1);
     terrain.loadChunk(-1, -1);
     terrain.loadChunk(1, 0);
+    terrain.loadChunk(-2, 0);
+    //terrain.unloadChunk(0, 0);
 
 
     
@@ -251,7 +254,8 @@ void countfps()
 	if (currt - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		std::cout << fpscounter + 1 << " fps" << std::endl;
+		//std::cout << fpscounter + 1 << " fps" << std::endl;
+        std::cout << "x:" << cam.lastX << ", y:" << cam.lastY << std::endl;
         //std::cout << glfwGetTime();
 		fpscounter = 0;
 		start = currt;
