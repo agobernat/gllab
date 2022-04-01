@@ -23,6 +23,8 @@
 #include "terraingen.hpp"
 #include "camera.hpp"
 
+#include "tinyglTF/tiny_gltf.h"
+
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -121,7 +123,7 @@ int main()
                  glm::vec3(0.0f, 0.0f, 1.0f));
 
     int hmapsize = 16;
-    Terrain terrain(tesTerrainShader, hmapsize, 16, texture3, 1);
+    Terrain terrain(tesTerrainShader, hmapsize, 16, texture6, 1);
 
     terrain.loadChunk(0, 0);
     terrain.loadChunk(-1, 0);
