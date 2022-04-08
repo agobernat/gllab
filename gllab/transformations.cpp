@@ -23,6 +23,8 @@
 #include "terraingen.hpp"
 #include "camera.hpp"
 
+#include "tinyglTF/tiny_gltf.h"
+
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
