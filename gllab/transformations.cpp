@@ -1,9 +1,15 @@
+
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+//#include "stb_image.h"
+#define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+#include "tiny_gltf.h"
 
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <stb_image.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,7 +29,8 @@
 #include "terraingen.hpp"
 #include "camera.hpp"
 
-#include "tinyglTF/tiny_gltf.h"
+
+
 
 
 
@@ -114,7 +121,65 @@ int main()
     texture6 = ResourceManager::LoadTexture("resources\\textures\\blank.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     unsigned int texture8 = ResourceManager::LoadTexture("resources\\textures\\pbr\\grass\\albedo.png", GL_RGB, GL_RGB, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
     unsigned int texture7 = ResourceManager::LoadTexture("resources\\textures\\iceland_heightmap.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
+
+
+
+
+
+
+
+    tinygltf::Model model;
+    tinygltf::TinyGLTF loader;
+    std::string err;
+    std::string warn;
+    std::string mdlpath("resources\\models\\Tree_01.gltf");
     
+    bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, mdlpath.c_str());
+    //bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, argv[1]); // for binary glTF(.glb)
+    
+    if (!warn.empty()) {
+        printf("Warn: %s\n", warn.c_str());
+    }
+    
+    if (!err.empty()) {
+        printf("Err: %s\n", err.c_str());
+    }
+    
+    if (!ret) {
+        printf("Failed to parse glTF\n");
+        return -1;
+    }
+
+    std::cout << model.buffers.size();
+
+
+
+    void bindModelNodes(std::map<int, GLuint> vbos, tinygltf::Model & model,
+        tinygltf::Node & node) {
+        if ((node.mesh >= 0) && (node.mesh < model.meshes.size())) {
+            bindMesh(vbos, model, model.meshes[node.mesh]);
+        }
+
+        for (size_t i = 0; i < node.children.size(); i++) {
+            assert((node.children[i] >= 0) && (node.children[i] < model.nodes.size()));
+            bindModelNodes(vbos, model, model.nodes[node.children[i]]);
+        }
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);

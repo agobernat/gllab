@@ -1,0 +1,263 @@
+{
+  "accessors": [
+    {
+      "name": "Mesh1 Tree Model_1_0_positions",
+      "componentType": 5126,
+      "count": 76,
+      "min": [
+        -0.0969351977109909,
+        0,
+        -1.295699954032898
+      ],
+      "max": [
+        1.1799999475479126,
+        3.2167599201202393,
+        0
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tree Model_1_0_normals",
+      "componentType": 5126,
+      "count": 76,
+      "min": [
+        -0.9925660490989685,
+        -1,
+        -0.9796541929244995
+      ],
+      "max": [
+        0.9796541929244995,
+        0.4384470283985138,
+        0.9796541929244995
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tree Model_1_0_texcoords",
+      "componentType": 5126,
+      "count": 76,
+      "min": [
+        -0.5889559984207153,
+        -0.4848800003528595
+      ],
+      "max": [
+        0.5889559984207153,
+        1.2582260370254517
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tree Model_1_0_indices",
+      "componentType": 5123,
+      "count": 138,
+      "min": [
+        0
+      ],
+      "max": [
+        75
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tree Model_1_1_positions",
+      "componentType": 5126,
+      "count": 20,
+      "min": [
+        0.34216201305389404,
+        -0.4958679974079132,
+        -0.8378379940986633
+      ],
+      "max": [
+        0.8378379940986633,
+        0,
+        -0.34216201305389404
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 912
+    },
+    {
+      "name": "Mesh1 Tree Model_1_1_normals",
+      "componentType": 5126,
+      "count": 20,
+      "min": [
+        -0.9947236180305481,
+        -1,
+        -0.9947236180305481
+      ],
+      "max": [
+        0.9947236180305481,
+        0.10259096324443817,
+        0.9947236180305481
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 912
+    },
+    {
+      "name": "Mesh1 Tree Model_1_1_texcoords",
+      "componentType": 5126,
+      "count": 20,
+      "min": [
+        -0.38083600997924805,
+        0.619163990020752
+      ],
+      "max": [
+        0.38083600997924805,
+        1.2632750272750854
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 608
+    },
+    {
+      "name": "Mesh1 Tree Model_1_1_indices",
+      "componentType": 5123,
+      "count": 30,
+      "min": [
+        0
+      ],
+      "max": [
+        19
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 276
+    }
+  ],
+  "asset": {
+    "generator": "obj2gltf",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "name": "Tree_01",
+      "byteLength": 3408,
+      "uri": "data:application/octet-stream;base64,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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "name": "bufferView_0",
+      "buffer": 0,
+      "byteLength": 1152,
+      "byteOffset": 0,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_1",
+      "buffer": 0,
+      "byteLength": 1152,
+      "byteOffset": 1152,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_2",
+      "buffer": 0,
+      "byteLength": 768,
+      "byteOffset": 2304,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_3",
+      "buffer": 0,
+      "byteLength": 336,
+      "byteOffset": 3072,
+      "target": 34963
+    }
+  ],
+  "materials": [
+    {
+      "name": "Leafs",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.270588,
+          0.407843,
+          0.4,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    },
+    {
+      "name": "Wood",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.666667,
+          0.545098,
+          0.356863,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Mesh1 Tree Model_1",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Mesh1 Tree Model",
+      "mesh": 0
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

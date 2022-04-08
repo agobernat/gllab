@@ -7,8 +7,8 @@
 //#include <learnopengl/filesystem.h>
 #include "macros.hpp"
 #include <filesystem>
-#include <stb_image.h>
-
+//#include <stb_image.h>
+#include "stb_image.h"
 	
 unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, int src_color, int scaling_min, int scaling_max)
 {

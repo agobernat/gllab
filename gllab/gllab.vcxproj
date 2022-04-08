@@ -164,7 +164,10 @@
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="chunk.hpp" />
     <ClInclude Include="gameobject.hpp" />
+    <ClInclude Include="include\shader.h" />
+    <ClInclude Include="include\shader_t.h" />
     <ClInclude Include="macros.hpp" />
+    <ClInclude Include="model.hpp" />
     <ClInclude Include="physicsengine.hpp" />
     <ClInclude Include="resourcemanager.hpp" />
     <ClInclude Include="sprite.hpp" />

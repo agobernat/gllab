@@ -86,6 +86,15 @@
     <ClInclude Include="camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\shader.h">
+      <Filter>Imports</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shader_t.h">
+      <Filter>Imports</Filter>
+    </ClInclude>
+    <ClInclude Include="model.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="5.1.transform.frag">
