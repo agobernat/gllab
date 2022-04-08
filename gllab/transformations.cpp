@@ -189,7 +189,7 @@ int main()
                  glm::vec3(0.0f, 0.0f, 1.0f));
 
     int hmapsize = 16;
-    Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 1);
+    Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 6969);
 
     terrain.loadChunk(0, 0);
     terrain.loadChunk(-1, 0);
