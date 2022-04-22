@@ -135,7 +135,7 @@ int main()
     tinygltf::TinyGLTF loader;
     std::string err;
     std::string warn;
-    std::string mdlpath("resources\\models\\Tree_01.gltf");
+    std::string mdlpath("resources\\models\\cliff.gltf");
     GameModel tree;
     
     bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, mdlpath.c_str());
