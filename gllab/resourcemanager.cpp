@@ -1,14 +1,17 @@
 #include "resourcemanager.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-//#include <stb_image.h>
+
 #include <iostream>
 #include <string> 
 //#include <learnopengl/filesystem.h>
-#include "macros.hpp"
+//#include "macros.hpp"
 #include <filesystem>
-//#include <stb_image.h>
+
+//#include "tiny_gltf.h"
 #include "stb_image.h"
+//#include "macros.hpp"
+
 	
 unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, int src_color, int scaling_min, int scaling_max)
 {

@@ -152,6 +152,7 @@
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="model.cpp" />
     <ClCompile Include="physicsengine.cpp" />
     <ClCompile Include="resourcemanager.cpp" />
     <ClCompile Include="sprite.cpp" />

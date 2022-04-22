@@ -1,11 +1,9 @@
 
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-//#include "stb_image.h"
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_MSC_SECURE_CRT
-#include "tiny_gltf.h"
+
+#include "macros.hpp"
+
+
 
 
 #include <glad/glad.h>
@@ -23,15 +21,19 @@
 
 #include <iostream>
 #include "resourcemanager.hpp"
-#include "macros.hpp"
 #include "sprite.hpp"
 #include "terrain.hpp"
 #include "terraingen.hpp"
 #include "camera.hpp"
+#include "model.hpp"
 
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 
-
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+#include "tiny_gltf.h"
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -152,19 +154,12 @@ int main()
 
     std::cout << model.buffers.size();
 
+    //Model mdl;
+    //mdl.bindModel(model);
 
 
-    void bindModelNodes(std::map<int, GLuint> vbos, tinygltf::Model & model,
-        tinygltf::Node & node) {
-        if ((node.mesh >= 0) && (node.mesh < model.meshes.size())) {
-            bindMesh(vbos, model, model.meshes[node.mesh]);
-        }
 
-        for (size_t i = 0; i < node.children.size(); i++) {
-            assert((node.children[i] >= 0) && (node.children[i] < model.nodes.size()));
-            bindModelNodes(vbos, model, model.nodes[node.children[i]]);
-        }
-    }
+    
 
     
 
