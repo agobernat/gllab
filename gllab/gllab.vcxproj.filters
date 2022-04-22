@@ -57,6 +57,9 @@
     <ClCompile Include="camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobject.hpp">
@@ -119,6 +122,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="terrain.tese">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="tree1.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="tree1.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

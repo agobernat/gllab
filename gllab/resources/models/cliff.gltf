@@ -1,0 +1,167 @@
+{
+  "accessors": [
+    {
+      "name": "Mesh1 Brown_Cliff Model_1_0_positions",
+      "componentType": 5126,
+      "count": 54,
+      "min": [
+        -0.2800000011920929,
+        -5.414339948572303e-16,
+        -3
+      ],
+      "max": [
+        0.5,
+        2.200000047683716,
+        0
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Brown_Cliff Model_1_0_normals",
+      "componentType": 5126,
+      "count": 54,
+      "min": [
+        -0.9727117419242859,
+        -1,
+        -1
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Brown_Cliff Model_1_0_texcoords",
+      "componentType": 5126,
+      "count": 54,
+      "min": [
+        -1.3559499979019165,
+        -0.3636400103569031
+      ],
+      "max": [
+        1.3636399507522583,
+        1
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Brown_Cliff Model_1_0_indices",
+      "componentType": 5123,
+      "count": 96,
+      "min": [
+        0
+      ],
+      "max": [
+        53
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 0
+    }
+  ],
+  "asset": {
+    "generator": "obj2gltf",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "name": "Brown_Cliff_01",
+      "byteLength": 1920,
+      "uri": "data:application/octet-stream;base64,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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "name": "bufferView_0",
+      "buffer": 0,
+      "byteLength": 648,
+      "byteOffset": 0,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_1",
+      "buffer": 0,
+      "byteLength": 648,
+      "byteOffset": 648,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_2",
+      "buffer": 0,
+      "byteLength": 432,
+      "byteOffset": 1296,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_3",
+      "buffer": 0,
+      "byteLength": 192,
+      "byteOffset": 1728,
+      "target": 34963
+    }
+  ],
+  "materials": [
+    {
+      "name": "Wood",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.666667,
+          0.545098,
+          0.356863,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Mesh1 Brown_Cliff Model_1",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Mesh1 Brown_Cliff Model",
+      "mesh": 0
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
