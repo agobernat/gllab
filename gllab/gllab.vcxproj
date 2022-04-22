@@ -184,6 +184,8 @@
     <None Include="terrain.tesc" />
     <None Include="terrain.tese" />
     <None Include="terrain.vert" />
+    <None Include="tree1.frag" />
+    <None Include="tree1.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,49 +1,49 @@
 #include "model.hpp"
 #include <iostream>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-void Model::bindModelNodes(std::map<int, GLuint> vbos, tinygltf::Model& model, tinygltf::Node& node) {
-    if ((node.mesh >= 0) && (node.mesh < model.meshes.size())) {
-        bindMesh(vbos, model, model.meshes[node.mesh]);
+GameModel::GameModel() {
+    model_mat = glm::mat4(1.0f);
+    model_rot = glm::mat4(1.0f);
+    model_pos = glm::vec3(-3, 0, -3);
+    view_mat = genView(glm::vec3(2, 2, 20), model_pos);
+}
+GameModel::~GameModel() {}
+
+bool GameModel::loadModel(tinygltf::Model& model, const char* filename) {
+    tinygltf::TinyGLTF loader;
+    std::string err;
+    std::string warn;
+
+    bool res = loader.LoadASCIIFromFile(&model, &err, &warn, filename);
+    if (!warn.empty()) {
+        std::cout << "WARN: " << warn << std::endl;
     }
 
-    for (size_t i = 0; i < node.children.size(); i++) {
-        assert((node.children[i] >= 0) && (node.children[i] < model.nodes.size()));
-        bindModelNodes(vbos, model, model.nodes[node.children[i]]);
+    if (!err.empty()) {
+        std::cout << "ERR: " << err << std::endl;
     }
+
+    if (!res)
+        std::cout << "Failed to load glTF: " << filename << std::endl;
+    else
+        std::cout << "Loaded glTF: " << filename << std::endl;
+
+    return res;
 }
 
-GLuint Model::bindModel(tinygltf::Model& model) {
-    std::map<int, GLuint> vbos;
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    const tinygltf::Scene& scene = model.scenes[model.defaultScene];
-    for (size_t i = 0; i < scene.nodes.size(); ++i) {
-        assert((scene.nodes[i] >= 0) && (scene.nodes[i] < model.nodes.size()));
-        bindModelNodes(vbos, model, model.nodes[scene.nodes[i]]);
-    }
-
-    glBindVertexArray(0);
-    // cleanup vbos
-    for (size_t i = 0; i < vbos.size(); ++i) {
-        glDeleteBuffers(1, &vbos[i]);
-    }
-
-    return vao;
-}
-
-
-std::map<int, GLuint> Model::bindMesh(std::map<int, GLuint> vbos,
+std::map<int, GLuint> GameModel::bindMesh(std::map<int, GLuint> vbos,
     tinygltf::Model& model, tinygltf::Mesh& mesh) {
     for (size_t i = 0; i < model.bufferViews.size(); ++i) {
         const tinygltf::BufferView& bufferView = model.bufferViews[i];
         if (bufferView.target == 0) {  // TODO impl drawarrays
             std::cout << "WARN: bufferView.target is zero" << std::endl;
-            continue;  // Unsupported bufferView.
-                       
+            continue;  
         }
 
         const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
@@ -144,7 +144,40 @@ std::map<int, GLuint> Model::bindMesh(std::map<int, GLuint> vbos,
     return vbos;
 }
 
-void Model::drawMesh(tinygltf::Model& model, tinygltf::Mesh& mesh) {
+// bind models
+void GameModel::bindModelNodes(std::map<int, GLuint> vbos, tinygltf::Model& model,
+    tinygltf::Node& node) {
+    if ((node.mesh >= 0) && (node.mesh < model.meshes.size())) {
+        bindMesh(vbos, model, model.meshes[node.mesh]);
+    }
+
+    for (size_t i = 0; i < node.children.size(); i++) {
+        assert((node.children[i] >= 0) && (node.children[i] < model.nodes.size()));
+        bindModelNodes(vbos, model, model.nodes[node.children[i]]);
+    }
+}
+GLuint GameModel::bindModel(tinygltf::Model& model) {
+    std::map<int, GLuint> vbos;
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    const tinygltf::Scene& scene = model.scenes[model.defaultScene];
+    for (size_t i = 0; i < scene.nodes.size(); ++i) {
+        assert((scene.nodes[i] >= 0) && (scene.nodes[i] < model.nodes.size()));
+        bindModelNodes(vbos, model, model.nodes[scene.nodes[i]]);
+    }
+
+    glBindVertexArray(0);
+    // cleanup vbos
+    for (size_t i = 0; i < vbos.size(); ++i) {
+        glDeleteBuffers(1, &vbos[i]);
+    }
+
+    return vao;
+}
+
+void GameModel::drawMesh(tinygltf::Model& model, tinygltf::Mesh& mesh) {
     for (size_t i = 0; i < mesh.primitives.size(); ++i) {
         tinygltf::Primitive primitive = mesh.primitives[i];
         tinygltf::Accessor indexAccessor = model.accessors[primitive.indices];
@@ -156,7 +189,7 @@ void Model::drawMesh(tinygltf::Model& model, tinygltf::Mesh& mesh) {
 }
 
 // recursively draw node and children nodes of model
-void Model::drawModelNodes(tinygltf::Model& model, tinygltf::Node& node) {
+void GameModel::drawModelNodes(tinygltf::Model& model, tinygltf::Node& node) {
     if ((node.mesh >= 0) && (node.mesh < model.meshes.size())) {
         drawMesh(model, model.meshes[node.mesh]);
     }
@@ -164,7 +197,7 @@ void Model::drawModelNodes(tinygltf::Model& model, tinygltf::Node& node) {
         drawModelNodes(model, model.nodes[node.children[i]]);
     }
 }
-void Model::drawModel(GLuint vao, tinygltf::Model& model) {
+void GameModel::drawModel(GLuint vao, tinygltf::Model& model) {
     glBindVertexArray(vao);
 
     const tinygltf::Scene& scene = model.scenes[model.defaultScene];
@@ -173,4 +206,62 @@ void Model::drawModel(GLuint vao, tinygltf::Model& model) {
     }
 
     glBindVertexArray(0);
+}
+
+void GameModel::dbgModel(tinygltf::Model& model) {
+    for (auto& mesh : model.meshes) {
+        std::cout << "mesh : " << mesh.name << std::endl;
+        for (auto& primitive : mesh.primitives) {
+            const tinygltf::Accessor& indexAccessor =
+                model.accessors[primitive.indices];
+
+            std::cout << "indexaccessor: count " << indexAccessor.count << ", type "
+                << indexAccessor.componentType << std::endl;
+
+            tinygltf::Material& mat = model.materials[primitive.material];
+            for (auto& mats : mat.values) {
+                std::cout << "mat : " << mats.first.c_str() << std::endl;
+            }
+
+            for (auto& image : model.images) {
+                std::cout << "image name : " << image.uri << std::endl;
+                std::cout << "  size : " << image.image.size() << std::endl;
+                std::cout << "  w/h : " << image.width << "/" << image.height
+                    << std::endl;
+            }
+
+            std::cout << "indices : " << primitive.indices << std::endl;
+            std::cout << "mode     : "
+                << "(" << primitive.mode << ")" << std::endl;
+
+            for (auto& attrib : primitive.attributes) {
+                std::cout << "attribute : " << attrib.first.c_str() << std::endl;
+            }
+        }
+    }
+}
+
+glm::mat4 GameModel::genView(glm::vec3 pos, glm::vec3 lookat) {
+    // Camera matrix
+    glm::mat4 view = glm::lookAt(
+        pos,                // Camera in World Space
+        lookat,             // and looks at the origin
+        glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
+    );
+
+    return view;
+}
+
+glm::mat4 GameModel::genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
+    int h) {
+    glm::mat4 Projection =
+        glm::perspective(glm::radians(fov), (float)w / (float)h, 0.01f, 1000.0f);
+
+    // Or, for an ortho camera :
+    // glm::mat4 Projection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,0.0f,100.0f);
+    // // In world coordinates
+
+    glm::mat4 mvp = Projection * view_mat * model_mat;
+
+    return mvp;
 }

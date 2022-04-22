@@ -1,9 +1,6 @@
 
 
 
-#include "macros.hpp"
-
-
 
 
 #include <glad/glad.h>
@@ -21,19 +18,21 @@
 
 #include <iostream>
 #include "resourcemanager.hpp"
+#include "macros.hpp"
 #include "sprite.hpp"
 #include "terrain.hpp"
 #include "terraingen.hpp"
 #include "camera.hpp"
 #include "model.hpp"
 
-
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-
+//#include "stb_image.h"
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
 #include "tiny_gltf.h"
+
+
 
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -100,10 +99,12 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
+
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("3d1st.vert", "5.1.transform.frag");
     Shader tesTerrainShader("terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
+    Shader treeShader("tree1.vert", "tree1.frag");
     //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
 	position = glm::vec3(0, 0, 0);
 
@@ -135,6 +136,7 @@ int main()
     std::string err;
     std::string warn;
     std::string mdlpath("resources\\models\\Tree_01.gltf");
+    GameModel tree;
     
     bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, mdlpath.c_str());
     //bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, argv[1]); // for binary glTF(.glb)
@@ -152,28 +154,10 @@ int main()
         return -1;
     }
 
+
     std::cout << model.buffers.size();
-
-    //Model mdl;
-    //mdl.bindModel(model);
-
-
-
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
+    tree.vao = tree.bindModel(model);
+   
 
  
     Sprite box = Sprite(ourShader);
@@ -185,6 +169,9 @@ int main()
 
     int hmapsize = 16;
     Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 6969);
+    
+
+    
 
     terrain.loadChunk(0, 0);
     terrain.loadChunk(-1, 0);
@@ -208,6 +195,28 @@ int main()
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+
+        treeShader.use();
+        auto modelmat = tree.model_rot;
+        glm::mat4 projection = glm::mat4(1.0f);
+        float rot = 0.0f;
+        //modelmat = glm::translate(modelmat, glm::vec3(-position.x, position.y, position.z));
+        modelmat = glm::rotate(modelmat, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
+
+        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+        
+        treeShader.setMat4("projection", projection);
+        treeShader.setMat4("view", cam.view());
+        treeShader.setMat4("model", modelmat);
+
+        tree.drawModel(tree.vao, model);
+
+
+
+
+
 
         
         kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
