@@ -181,6 +181,14 @@ int main()
     terrain.loadChunk(-2, 0);
     //terrain.unloadChunk(0, 0);
 
+    std::vector<std::pair<int, int>> loaded;
+    //loaded.push_back(std::pair(0, 0));
+    loaded.push_back(std::pair(-1, 0));
+    loaded.push_back(std::pair(0, -1));
+    loaded.push_back(std::pair(-1, -1));
+    loaded.push_back(std::pair(1, 0));
+    loaded.push_back(std::pair(-2, 0));
+    
 
     
 
@@ -290,6 +298,7 @@ void processInput(GLFWwindow *window)
         cam.pos -= glm::normalize(glm::cross(cam.front, cam.up)) * cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         cam.pos += glm::normalize(glm::cross(cam.front, cam.up)) * cameraSpeed;
+        
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         cam.pos += cameraSpeed * cam.up;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
@@ -325,8 +334,8 @@ void countfps()
 	if (currt - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		//std::cout << fpscounter + 1 << " fps" << std::endl;
-        std::cout << "x:" << cam.lastX << ", y:" << cam.lastY << std::endl;
+		std::cout << fpscounter + 1 << " fps" << std::endl;
+        //std::cout << "x:" << cam.lastX << ", y:" << cam.lastY << std::endl;
         //std::cout << glfwGetTime();
 		fpscounter = 0;
 		start = currt;
