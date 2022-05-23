@@ -13,6 +13,7 @@ Chunk::Chunk(Terrain& terrain, unsigned int size, unsigned int res, int Xcoord, 
 }
 
 Chunk::~Chunk() {
+    glDeleteTextures(1, &hmaptexture);
 	delete[] hmap;
 }
 

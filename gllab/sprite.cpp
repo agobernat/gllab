@@ -120,7 +120,7 @@ void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
     unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
     unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");
     // pass them to the shaders (3 different ways)
-    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));\
     glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
     // note: currently we set the projection matrix each frame, but since the projection matrix rarely changes it's often best practice to set it outside the main loop only once.
     shader.setMat4("projection", projection);
