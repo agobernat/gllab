@@ -172,6 +172,7 @@
     <ClInclude Include="physicsengine.hpp" />
     <ClInclude Include="resourcemanager.hpp" />
     <ClInclude Include="sprite.hpp" />
+    <ClInclude Include="static.hpp" />
     <ClInclude Include="terrain.hpp" />
     <ClInclude Include="terraingen.hpp" />
   </ItemGroup>

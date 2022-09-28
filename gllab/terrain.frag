@@ -44,7 +44,7 @@ void main()
 	
 	vec3 result = (ambient + diffuse);
 	
-    FragColor = vec4(result + texture(texture1, FragPos.xy / 16).xyz, 1.0);
+    FragColor = vec4(result + texture(texture1, FragPos.xz / 16).xyz, 1.0);
 	
 	
 	//vec4 texColor = texture(texture1, TexCoord);

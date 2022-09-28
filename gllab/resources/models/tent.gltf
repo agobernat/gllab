@@ -1,0 +1,359 @@
+{
+  "accessors": [
+    {
+      "name": "Mesh1 Tent_Poles Model_1_0_positions",
+      "componentType": 5126,
+      "count": 103,
+      "min": [
+        0,
+        0,
+        -3
+      ],
+      "max": [
+        3,
+        2.855030059814453,
+        0
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_0_normals",
+      "componentType": 5126,
+      "count": 103,
+      "min": [
+        -0.936618447303772,
+        -1,
+        -1
+      ],
+      "max": [
+        0.936618447303772,
+        0.46510401368141174,
+        1
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_0_texcoords",
+      "componentType": 5126,
+      "count": 103,
+      "min": [
+        -1.3636399507522583,
+        -0.46595001220703125
+      ],
+      "max": [
+        1.3636399507522583,
+        1.634232997894287
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_0_indices",
+      "componentType": 5123,
+      "count": 201,
+      "min": [
+        0
+      ],
+      "max": [
+        102
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 0
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_1_positions",
+      "componentType": 5126,
+      "count": 92,
+      "min": [
+        1.350000023841858,
+        6.767920303503948e-17,
+        -3
+      ],
+      "max": [
+        1.649999976158142,
+        2.855030059814453,
+        0
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 1236
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_1_normals",
+      "componentType": 5126,
+      "count": 92,
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 1236
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_1_texcoords",
+      "componentType": 5126,
+      "count": 92,
+      "min": [
+        -1.3636399507522583,
+        -0.3636400103569031
+      ],
+      "max": [
+        1.3636399507522583,
+        1
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 824
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_1_indices",
+      "componentType": 5123,
+      "count": 153,
+      "min": [
+        0
+      ],
+      "max": [
+        91
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 404
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_2_positions",
+      "componentType": 5126,
+      "count": 8,
+      "min": [
+        0.6789479851722717,
+        1.2922799587249756,
+        -2.25219988822937
+      ],
+      "max": [
+        1.2227599620819092,
+        2.3273398876190186,
+        -0.7046210169792175
+      ],
+      "type": "VEC3",
+      "bufferView": 0,
+      "byteOffset": 2340
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_2_normals",
+      "componentType": 5126,
+      "count": 8,
+      "min": [
+        -0.8852560520172119,
+        0.46510401368141174,
+        -3.4694502606760644e-18
+      ],
+      "max": [
+        -0.8852560520172119,
+        0.46510401368141174,
+        1.517879997455052e-16
+      ],
+      "type": "VEC3",
+      "bufferView": 1,
+      "byteOffset": 2340
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_2_texcoords",
+      "componentType": 5126,
+      "count": 8,
+      "min": [
+        -1.0237300395965576,
+        -0.19499999284744263
+      ],
+      "max": [
+        -0.3202820122241974,
+        0.3364650011062622
+      ],
+      "type": "VEC2",
+      "bufferView": 2,
+      "byteOffset": 1560
+    },
+    {
+      "name": "Mesh1 Tent_Poles Model_1_2_indices",
+      "componentType": 5123,
+      "count": 12,
+      "min": [
+        0
+      ],
+      "max": [
+        7
+      ],
+      "type": "SCALAR",
+      "bufferView": 3,
+      "byteOffset": 712
+    }
+  ],
+  "asset": {
+    "generator": "obj2gltf",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "name": "Tent_Poles_01",
+      "byteLength": 7232,
+      "uri": "data:application/octet-stream;base64,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JKBivx0i7j5ZKgsmJKBivx0i7j5ZKgsmJKBivx0i7j5ZKgsmJKBivx0i7j5ZKgsmJKBivx0i7j5ZKgsmJKBivx0i7j5ZKgsmsWWtpy/tMiUAAIC/sWWtpy/tMiUAAIC/sWWtpy/tMiUAAIC/sWWtpy/tMiUAAIC/sWWtpy/tMiUAAIC/AACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAj9XHkIQzNqgAAIC/j9XHkIQzNqgAAIC/j9XHkIQzNqgAAIC/j9XHkIQzNqgAAIC/AACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAACAvwAAAAAAAACAAAAAAAAAgL8AAACAAAAAAAAAgL8AAACAAAAAAAAAgL8AAACAAAAAAAAAgL8AAACAAAAAAAAAgL8AAACAAAAAAAAAgL8AAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAACAPwAAAAAAAACAAAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIC/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/AAAAAAAAAAAAAIA/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"
+    }
+  ],
+  "bufferViews": [
+    {
+      "name": "bufferView_0",
+      "buffer": 0,
+      "byteLength": 2436,
+      "byteOffset": 0,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_1",
+      "buffer": 0,
+      "byteLength": 2436,
+      "byteOffset": 2436,
+      "byteStride": 12,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_2",
+      "buffer": 0,
+      "byteLength": 1624,
+      "byteOffset": 4872,
+      "byteStride": 8,
+      "target": 34962
+    },
+    {
+      "name": "bufferView_3",
+      "buffer": 0,
+      "byteLength": 736,
+      "byteOffset": 6496,
+      "target": 34963
+    }
+  ],
+  "materials": [
+    {
+      "name": "Green_Roof",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.309804,
+          0.466667,
+          0.458824,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    },
+    {
+      "name": "Wood",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.666667,
+          0.545098,
+          0.356863,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    },
+    {
+      "name": "Leafs",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.270588,
+          0.407843,
+          0.4,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Mesh1 Tent_Poles Model_1",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 4,
+            "NORMAL": 5,
+            "TEXCOORD_0": 6
+          },
+          "indices": 7,
+          "material": 1,
+          "mode": 4
+        },
+        {
+          "attributes": {
+            "POSITION": 8,
+            "NORMAL": 9,
+            "TEXCOORD_0": 10
+          },
+          "indices": 11,
+          "material": 2,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Mesh1 Tent_Poles Model",
+      "mesh": 0
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}

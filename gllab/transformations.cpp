@@ -30,7 +30,8 @@
 #define TINYGLTF_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MSC_SECURE_CRT
-#include "tiny_gltf.h"
+//#include "tiny_gltf.h"
+#include "static.hpp"
 
 
 
@@ -74,7 +75,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.2", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", glfwGetPrimaryMonitor(), NULL);
 	if (window == NULL)
     {
@@ -95,7 +96,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
+    Static::init();
 
     glEnable(GL_DEPTH_TEST);
 
@@ -131,41 +132,25 @@ int main()
 
 
 
-    tinygltf::Model model;
-    tinygltf::TinyGLTF loader;
-    std::string err;
-    std::string warn;
-    std::string mdlpath("resources\\models\\cliff.gltf");
+
+    std::string mdlpath("resources\\models\\Tree_01.gltf");
+    //std::string mdlpath("resources\\models\\cliff.gltf");
+    //std::string mdlpath("resources\\models\\Cube.gltf");
+    //std::string mdlpath("resources\\models\\tent.gltf");
     GameModel tree;
-    
-    bool ret = loader.LoadASCIIFromFile(&model, &err, &warn, mdlpath.c_str());
-    //bool ret = loader.LoadBinaryFromFile(&model, &err, &warn, argv[1]); // for binary glTF(.glb)
-    
-    if (!warn.empty()) {
-        printf("Warn: %s\n", warn.c_str());
-    }
-    
-    if (!err.empty()) {
-        printf("Err: %s\n", err.c_str());
-    }
-    
-    if (!ret) {
-        printf("Failed to parse glTF\n");
-        return -1;
-    }
-
-
-    std::cout << model.buffers.size();
-    tree.vao = tree.bindModel(model);
+    tree.loadFromFile(mdlpath);
+    tree.bind();
+     
+    //tree.dbgModel(model);
    
 
  
     Sprite box = Sprite(ourShader);
     Sprite kid = Sprite(ourShader);
 
-    cam = Camera(glm::vec3(0.0f, -5.0f, 4.0f),
-                 glm::vec3(0.0f, 1.0f, 0.0f),
-                 glm::vec3(0.0f, 0.0f, 1.0f));
+    cam = Camera(glm::vec3(0.0f, 4.0f, 5.0f),
+                 glm::vec3(0.0f, 0.0f, - 1.0f),
+                 glm::vec3(0.0f, 1.0f, 0.0f));
 
     int hmapsize = 16;
     Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 6969);
@@ -207,11 +192,11 @@ int main()
 
 
         treeShader.use();
-        auto modelmat = tree.model_rot;
+        auto modelmat = glm::mat4(1.0f); //tree.model_rot;
         glm::mat4 projection = glm::mat4(1.0f);
         float rot = 0.0f;
         //modelmat = glm::translate(modelmat, glm::vec3(-position.x, position.y, position.z));
-        modelmat = glm::rotate(modelmat, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
+        //modelmat = glm::rotate(modelmat, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
 
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
         
@@ -219,7 +204,7 @@ int main()
         treeShader.setMat4("view", cam.view());
         treeShader.setMat4("model", modelmat);
 
-        tree.drawModel(tree.vao, model);
+        tree.draw();
 
 
 
@@ -227,9 +212,9 @@ int main()
 
 
         
-        kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
-        box.Draw(position, texture1, cam.view());
-        kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, cam.view());
+        //kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
+        //box.Draw(position, texture1, cam.view());
+        //kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, cam.view());
         
         
         terrain.draw(currt, cam);
@@ -285,10 +270,10 @@ void processInput(GLFWwindow *window)
 
     float cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
-        cameraSpeed = 250.0f * dts;
+        cameraSpeed = 12.5f * dts;
     else
     {
-        cameraSpeed = 25.0f * dts;
+        cameraSpeed = 2.50f * dts;
     }// adjust accordingly
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cam.pos += cameraSpeed * cam.front;
@@ -334,7 +319,7 @@ void countfps()
 	if (currt - start > 1.0f)
 	{
         //std::cout << "position:" << position.x << std::endl;
-		std::cout << fpscounter + 1 << " fps" << std::endl;
+		//std::cout << fpscounter + 1 << " fps" << std::endl;
         //std::cout << "x:" << cam.lastX << ", y:" << cam.lastY << std::endl;
         //std::cout << glfwGetTime();
 		fpscounter = 0;
@@ -375,4 +360,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
+
+
+/*
+for (size_t i = 0; i < model.buffers[0].data.size(); i += 4)
+{
+    if (i % 12 == 0)
+    {
+        std::cout << std::endl;
+    }
+    std::cout << *reinterpret_cast<float*>(&model.buffers[0].data.at(i)) << ", ";
+
+}*/
 

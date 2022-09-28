@@ -52,8 +52,8 @@ void Chunk::draw(double time, Camera camera, Shader shader, GLuint texture) {
    
    
     //model = glm::rotate(model, glm::radians(angle), axis);
-    model = glm::scale(model, glm::vec3((float)size * res / 2, (float)size * res / 2, 1.0f));
-    model = glm::translate(model, glm::vec3(float(int(size) * Ycoord - Ycoord), float(int(size) * Xcoord - Xcoord), 0.0f));
+    model = glm::scale(model, glm::vec3((float)size * res / 2, 1.0f, (float)size * res / 2));
+    model = glm::translate(model, glm::vec3(float(int(size) * Ycoord - Ycoord), 0.0f, float(int(size) * Xcoord - Xcoord)));
     projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
    
    
@@ -66,7 +66,7 @@ void Chunk::draw(double time, Camera camera, Shader shader, GLuint texture) {
    
    
     shader.setVec3("viewPos", camera.pos);
-    shader.setVec3("lightPos", glm::vec3(glm::sin(time / 10) * 100, 0.0f, glm::abs(glm::cos(time / 10) * 100)));
+    shader.setVec3("lightPos", glm::vec3(glm::sin(time / 10) * 100, glm::abs(glm::cos(time / 10) * 100), 0.0f));
     shader.setInt("hmap", 0);
     shader.setInt("texture1", 1);
 

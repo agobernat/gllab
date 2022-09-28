@@ -1,13 +1,9 @@
 #version 410 core
 out vec4 FragColor;
-
-in vec2 TexCoord;
-
-// texture samplers
-
+  
+in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
 
 void main()
 {
-	vec4 texColor = vec4(1,0,0,1);
-	FragColor = texColor;
-}
+    FragColor = vertexColor;
+} 

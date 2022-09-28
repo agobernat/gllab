@@ -28,7 +28,7 @@ void main()
     //FragPos = vec3(model * vec4(aPos, hmapAstex.r, 1.0f));
     //gl_Position = projection * view  * vec4(FragPos, 1.0f);
     
-    gl_Position = vec4(aPos, 0.0f, 1.0);
+    gl_Position = vec4(aPos.x, 0.0f, aPos.y, 1.0f);
     
     TexCoord = vec2((aPos.x) * 16 / (hmapsize - 16), (aPos.y) * 16/ (hmapsize - 16));
     

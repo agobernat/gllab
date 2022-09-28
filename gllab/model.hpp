@@ -9,41 +9,69 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
+
 class GameModel
 {
 public:
+	
 	GameModel();
 	~GameModel();
-	bool loadModel(tinygltf::Model& model, const char* filename);
+	bool loadFromFile(const std::string filename);
+	struct PrimitiveData;
+	std::map<int, PrimitiveData> calculatePrimitiveBufferParams(tinygltf::Mesh& mesh);
 
-	std::map<int, GLuint> bindMesh(std::map<int, GLuint> vbos,
-		tinygltf::Model& model, tinygltf::Mesh& mesh);
+	void bindMesh(tinygltf::Mesh& mesh);
 
-	void bindModelNodes(std::map<int, GLuint> vbos, tinygltf::Model& model,
-		tinygltf::Node& node);
+	void bindModelNodes(tinygltf::Node& node);
 
-	GLuint bindModel(tinygltf::Model& model);
+	void bind();
 
-	void drawMesh(tinygltf::Model& model, tinygltf::Mesh& mesh);
+	void drawMesh(tinygltf::Mesh& mesh);
 
-	void drawModelNodes(tinygltf::Model& model, tinygltf::Node& node);
+	void drawModelNodes(tinygltf::Node& node);
 
-	void drawModel(GLuint vao, tinygltf::Model& model);
+	void draw();
 
-	void dbgModel(tinygltf::Model& model);
+	void dbgModel();
 
 	glm::mat4 genView(glm::vec3 pos, glm::vec3 lookat);
 
 	glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
 		int h);
 
-	GLuint vao;
+	//GLuint vao;
+	
 
+
+private:
 	glm::mat4 model_mat;
 	glm::mat4 model_rot;
 	glm::vec3 model_pos;
 	glm::mat4 view_mat;
+	tinygltf::Model* modelData;
 
-private:
+	struct BufferData
+	{
+		GLuint vbo;
+		int bufferView;
+
+		size_t accessorByteLength;
+		size_t accessorByteOffset;
+	};
+
+	struct PrimitiveData
+	{
+		size_t currentBufferOffset;
+		GLuint vao;
+		std::map<int, BufferData> bufData;
+	};
+
+
+
+	std::map<int, PrimitiveData> meshData;
+
+	
 	
 };
+
