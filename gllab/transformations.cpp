@@ -10,31 +10,38 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
+
 #include <stdlib.h>
 #include <time.h>
 
+
+#define TINYGLTF_IMPLEMENTATION
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STBI_MSC_SECURE_CRT
+
+#include <tiny_gltf.h>
+
+#undef TINYGLTF_IMPLEMENTATION
+#undef STB_IMAGE_IMPLEMENTATION
+#undef STB_IMAGE_WRITE_IMPLEMENTATION
+#undef STBI_MSC_SECURE_CRT
+
+
+#include "model.hpp"
 //#include <learnopengl/filesystem.h>
 #include <shader_t.h>
-
+#include "shadermanager.hpp"
 #include <iostream>
 #include "resourcemanager.hpp"
-#include "macros.hpp"
 #include "sprite.hpp"
 #include "terrain.hpp"
 #include "terraingen.hpp"
 #include "camera.hpp"
-#include "model.hpp"
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-//#include "stb_image.h"
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
-#define STBI_MSC_SECURE_CRT
-//#include "tiny_gltf.h"
 #include "static.hpp"
-
-
-
+#include "globals.hpp"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -57,10 +64,6 @@ float start;
 
 float currt;
 
-
-
-
-
 int main()
 {
     // glfw: initialize and configure
@@ -75,7 +78,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(Static::SCR_WIDTH, Static::SCR_HEIGHT, "Engine v0.1", NULL, NULL);
 	//GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Engine v0.1", glfwGetPrimaryMonitor(), NULL);
 	if (window == NULL)
     {
@@ -103,13 +106,13 @@ int main()
 
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("3d1st.vert", "5.1.transform.frag");
-    Shader tesTerrainShader("terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
-    Shader treeShader("tree1.vert", "tree1.frag");
-    //Shader ourShader("5.1.transform.vert", "5.1.transform.frag");
+    auto& shaderManager = Globals::shaderManager;
+    shaderManager.loadShader("box", "3d1st.vert", "5.1.transform.frag");
+    shaderManager.loadShader("terrain", "terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
+    shaderManager.loadShader("defaultmodel", "tree1.vert", "tree1.frag");
+    shaderManager.setDefaultShader("defaultmodel");
+
 	position = glm::vec3(0, 0, 0);
-
-
 
     // load and create a texture 
     // -------------------------
@@ -128,13 +131,8 @@ int main()
 
 
 
-
-
-
-
-
     std::string mdlpath("resources\\models\\Tree_01.gltf");
-    //std::string mdlpath("resources\\models\\cliff.gltf");
+    //std::string mdlpath("resources\\models\\rivercorner.gltf");
     //std::string mdlpath("resources\\models\\Cube.gltf");
     //std::string mdlpath("resources\\models\\tent.gltf");
     GameModel tree;
@@ -145,15 +143,15 @@ int main()
    
 
  
-    Sprite box = Sprite(ourShader);
-    Sprite kid = Sprite(ourShader);
+    Sprite box = Sprite(shaderManager.getShader("box"));
+    Sprite kid = Sprite(shaderManager.getShader("box"));
 
     cam = Camera(glm::vec3(0.0f, 4.0f, 5.0f),
                  glm::vec3(0.0f, 0.0f, - 1.0f),
                  glm::vec3(0.0f, 1.0f, 0.0f));
 
     int hmapsize = 16;
-    Terrain terrain(tesTerrainShader, hmapsize, 16, texture8, 6969);
+    Terrain terrain(shaderManager.getShader("terrain"), hmapsize, 16, texture8, 6969);
     
 
     
@@ -189,29 +187,8 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        tree.draw(cam);
 
-
-        treeShader.use();
-        auto modelmat = glm::mat4(1.0f); //tree.model_rot;
-        glm::mat4 projection = glm::mat4(1.0f);
-        float rot = 0.0f;
-        //modelmat = glm::translate(modelmat, glm::vec3(-position.x, position.y, position.z));
-        //modelmat = glm::rotate(modelmat, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
-
-        projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
-        
-        treeShader.setMat4("projection", projection);
-        treeShader.setMat4("view", cam.view());
-        treeShader.setMat4("model", modelmat);
-
-        tree.draw();
-
-
-
-
-
-
-        
         //kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
         //box.Draw(position, texture1, cam.view());
         //kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, cam.view());
@@ -224,13 +201,7 @@ int main()
         glfwPollEvents();
     }
 
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
-
-    // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
+    
     glfwTerminate();
     return 0;
 }

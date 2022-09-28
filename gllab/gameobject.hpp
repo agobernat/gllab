@@ -1,5 +1,4 @@
-#ifndef _GAME_OBJECT_H_
-#define _GAME_OBJECT_H_
+#pragma once
 
 #include "sprite.hpp"
 #include <glm/glm.hpp>
@@ -33,6 +32,3 @@ GameObject::~GameObject()
 {
 }
 
-
-
-#endif

@@ -9,9 +9,12 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
+uniform vec4 baseColorFactor;
+
 void main()
 {
     gl_Position = projection * view * model * vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
-    vertexColor = vec4(0.5, 0.0, 0.0, 1.0) * dot(aNorm, vec3(view[0][2], view[1][2], view[2][2])); // set the output variable to a dark-red color
+    vertexColor = baseColorFactor * (0.4f + 0.6f * dot(normalize(aNorm), normalize(vec3(view[0][2], view[1][2], view[2][2]))));
+    //vec4(0.5, 0.0, 0.0, 1.0) * dot(aNorm, vec3(view[0][2], view[1][2], view[2][2])); // set the output variable to a dark-red color
 }
 

@@ -1,5 +1,4 @@
-#ifndef _RESOURCE_MANAGER_
-#define _RESOURCE_MANAGER_
+#pragma once
 
 
 
@@ -17,8 +16,3 @@ private:
 	
 };
 
-
-
-
-
-#endif // !_RESOURCE_MANAGER_

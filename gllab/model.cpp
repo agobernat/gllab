@@ -1,10 +1,13 @@
 #include "model.hpp"
 #include <iostream>
-#include "static.hpp"
+
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "static.hpp"
+#include "globals.hpp"
 
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -51,6 +54,8 @@ void GameModel::bindMesh(tinygltf::Mesh& mesh) {
 
     for (size_t i = 0; i < mesh.primitives.size(); ++i) {
 
+        auto& shaderManager = Globals::shaderManager;
+
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -58,6 +63,10 @@ void GameModel::bindMesh(tinygltf::Mesh& mesh) {
         auto& prim = meshData[i];
         prim.vao = vao;
         prim.currentBufferOffset = 0;
+
+        tinygltf::Primitive primitive = mesh.primitives[i];
+
+        prim.shader = &shaderManager.getShaderByMaterial(modelData->materials[primitive.material].name.c_str());
 
         for (size_t j = 0; j < modelData->bufferViews.size(); ++j) {
             const tinygltf::BufferView& bufferView = modelData->bufferViews[j];
@@ -79,18 +88,12 @@ void GameModel::bindMesh(tinygltf::Mesh& mesh) {
                 << ", bufferview + accessor byteOffset = " << bufferView.byteOffset + prim.bufData[j].accessorByteOffset
                 << "buffer data at 0" << buffer.data.at(0) 
                 << std::endl;
-
             
             glBufferData(bufferView.target, prim.bufData[j].accessorByteLength,
                 &buffer.data.at(0) + bufferView.byteOffset + prim.bufData[j].accessorByteOffset, GL_DYNAMIC_DRAW);
             prim.currentBufferOffset += prim.bufData[j].accessorByteLength;
 
         }
-
-
-
-        tinygltf::Primitive primitive = mesh.primitives[i];
-        
 
         for (auto& attrib : primitive.attributes) {
             tinygltf::Accessor accessor = modelData->accessors[attrib.second];
@@ -215,7 +218,7 @@ std::map<int, GameModel::PrimitiveData> GameModel::calculatePrimitiveBufferParam
             }
             
         }
-        //modelData->materials[primitive.material].pbrMetallicRoughness.baseColorFactor;
+       
 
         tinygltf::Accessor indexAccessor = modelData->accessors[primitive.indices];
         primData.bufData[Static::vaamax + 1].bufferView = indexAccessor.bufferView;
@@ -252,12 +255,30 @@ void GameModel::bind() {
 
 }
 
-void GameModel::drawMesh(tinygltf::Mesh& mesh) {
+void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera) {
     for (size_t i = 0; i < mesh.primitives.size(); ++i) {
         tinygltf::Primitive primitive = mesh.primitives[i];
         tinygltf::Accessor indexAccessor = modelData->accessors[primitive.indices];
 
         glBindVertexArray(meshData[i].vao);
+
+
+
+
+        meshData[i].shader->use();
+        auto modelmat = glm::mat4(1.0f); //tree.model_rot;
+        glm::mat4 projection = glm::mat4(1.0f);
+        float rot = 0.0f;
+        projection = glm::perspective(glm::radians(45.0f), (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT, 0.1f, 10000.0f);
+
+        meshData[i].shader->setMat4("projection", projection);
+        meshData[i].shader->setMat4("view", camera.view());
+        meshData[i].shader->setMat4("model", modelmat);
+
+
+
+        const auto& baseclr = modelData->materials[primitive.material].pbrMetallicRoughness.baseColorFactor;
+        meshData[i].shader->setVec4("baseColorFactor", glm::vec4(baseclr[0], baseclr[1], baseclr[2], baseclr[3]));
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshData[i].bufData[indexAccessor.bufferView].vbo);
         glDrawElements(primitive.mode, indexAccessor.count,
@@ -270,19 +291,19 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh) {
 }
 
 // recursively draw node and children nodes of model
-void GameModel::drawModelNodes(tinygltf::Node& node) {
+void GameModel::drawModelNodes(tinygltf::Node& node, const Camera& camera) {
     if ((node.mesh >= 0) && (node.mesh < modelData->meshes.size())) {
-        drawMesh(modelData->meshes[node.mesh]);
+        drawMesh(modelData->meshes[node.mesh], camera);
     }
     for (size_t i = 0; i < node.children.size(); i++) {
-        drawModelNodes(modelData->nodes[node.children[i]]);
+        drawModelNodes(modelData->nodes[node.children[i]], camera);
     }
 }
-void GameModel::draw() {
+void GameModel::draw(const Camera& camera) {
 
     const tinygltf::Scene& scene = modelData->scenes[modelData->defaultScene];
     for (size_t i = 0; i < scene.nodes.size(); ++i) {
-        drawModelNodes(modelData->nodes[scene.nodes[i]]);
+        drawModelNodes(modelData->nodes[scene.nodes[i]], camera);
     }
 
 }

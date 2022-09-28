@@ -1,5 +1,4 @@
 #include "gameobject.hpp"
-#include "macros.hpp"
 
 
 void GameObject::setScale(glm::dvec3 scale)

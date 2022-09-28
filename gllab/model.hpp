@@ -1,6 +1,16 @@
 #pragma once
 
+#pragma warning(push)
+#pragma warning(suppress)
+
+
+
 #include "tiny_gltf.h"
+
+#pragma warning(pop)
+
+#include <shader_t.h>
+#include "camera.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,6 +23,7 @@
 
 class GameModel
 {
+private: struct PrimitiveData;
 public:
 	
 	GameModel();
@@ -27,11 +38,11 @@ public:
 
 	void bind();
 
-	void drawMesh(tinygltf::Mesh& mesh);
+	void drawMesh(tinygltf::Mesh& mesh, const Camera& camera);
 
-	void drawModelNodes(tinygltf::Node& node);
+	void drawModelNodes(tinygltf::Node& node, const Camera& camera);
 
-	void draw();
+	void draw(const Camera& camera);
 
 	void dbgModel();
 
@@ -62,6 +73,7 @@ private:
 
 	struct PrimitiveData
 	{
+		const Shader* shader;
 		size_t currentBufferOffset;
 		GLuint vao;
 		std::map<int, BufferData> bufData;

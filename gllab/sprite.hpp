@@ -1,12 +1,11 @@
-#ifndef _SPRITE_
-#define _SPRITE_
+#pragma once
 
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#include "shader.h"
-
+#include "shader_t.h"
+#include "static.hpp"
 
 
 class Sprite
@@ -14,7 +13,7 @@ class Sprite
 	
 public:
 	//Sprite();
-	Sprite(Shader &shader);
+	Sprite(const Shader &shader);
 	~Sprite();
 
 	void Draw(glm::vec3 position, unsigned int texture, glm::mat4 view);
@@ -22,14 +21,9 @@ public:
 	
 
 private:
-	Shader shader;
+	const Shader shader;
 	float* vertexmatrix;
 	unsigned int quadVAO;
 	void initRenderData();
 };
 
-
-
-
-
-#endif // !_SPRITE_

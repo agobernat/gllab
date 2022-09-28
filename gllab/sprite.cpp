@@ -2,7 +2,6 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "macros.hpp"
 
 
 /*Sprite::Sprite(Shader& shader)
@@ -11,7 +10,7 @@
     this->initRenderData();
 }*/
 
-Sprite::Sprite(Shader& shader) : shader(shader) { initRenderData(); }
+Sprite::Sprite(const Shader& shader) : shader(shader) { initRenderData(); }
 
 Sprite::~Sprite()
 {
@@ -115,7 +114,7 @@ void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
     model = glm::translate(model, glm::vec3(-position.x, position.y, position.z));
     model = glm::rotate(model, glm::radians(rot), glm::vec3(1.0f, 0.0f, 0.0f));
     
-    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT, 0.1f, 10000.0f);
     // retrieve the matrix uniform locations
     unsigned int modelLoc = glGetUniformLocation(shader.ID, "model");
     unsigned int viewLoc = glGetUniformLocation(shader.ID, "view");

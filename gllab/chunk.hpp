@@ -4,8 +4,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "camera.hpp"
 #include <shader_t.h>
-#include "macros.hpp"
+#include "static.hpp"
 #include "terrain.hpp"
+
 
 class Terrain;
 class Chunk
@@ -14,7 +15,7 @@ public:
 	Chunk(Terrain& terrain, unsigned int size, unsigned int res, int Xcoord, int Ycoord);
 	~Chunk();
     void init();
-    void draw(double time, Camera camera, Shader shader, GLuint texture);
+    void draw(double time, const Camera& camera, const Shader& shader, GLuint texture);
     void loadHmapAsTexture(float* hmap, int hmapsize);
 
 

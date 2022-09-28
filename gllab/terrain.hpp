@@ -13,8 +13,8 @@ class Terrain
 {
     
 public:
-    Terrain(Shader& shader, unsigned int size, unsigned int res, GLuint texture, long long int seed);
-    Terrain(Shader& shader, unsigned int size, unsigned int res, GLuint texture);
+    Terrain(const Shader& shader, unsigned int size, unsigned int res, GLuint texture, long long int seed);
+    Terrain(const Shader& shader, unsigned int size, unsigned int res, GLuint texture);
     ~Terrain();
     void init();
     void draw(double time, Camera camera);
@@ -35,7 +35,7 @@ private:
     std::list<void*> drawlist;
 
     //unsigned int quadVAO;
-    Shader shader;
+    const Shader& shader;
     unsigned int size, res;
 
     //GLuint hmap;

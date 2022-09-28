@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "static.hpp"
 
 class Camera
 {
@@ -11,7 +12,7 @@ public:
 	~Camera();
 
 	void move(float x, float y);
-	glm::mat4 view();
+	const glm::mat4 view() const;
 
 	glm::vec3 front, pos, up;
 	int lastX, lastY;

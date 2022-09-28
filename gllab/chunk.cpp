@@ -44,7 +44,7 @@ void Chunk::init() {
 
 
 
-void Chunk::draw(double time, Camera camera, Shader shader, GLuint texture) {
+void Chunk::draw(double time, const Camera& camera, const Shader& shader, GLuint texture) {
 
     shader.use();
     glm::mat4 model = glm::mat4(1.0f);
@@ -54,7 +54,7 @@ void Chunk::draw(double time, Camera camera, Shader shader, GLuint texture) {
     //model = glm::rotate(model, glm::radians(angle), axis);
     model = glm::scale(model, glm::vec3((float)size * res / 2, 1.0f, (float)size * res / 2));
     model = glm::translate(model, glm::vec3(float(int(size) * Ycoord - Ycoord), 0.0f, float(int(size) * Xcoord - Xcoord)));
-    projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 10000.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT, 0.1f, 10000.0f);
    
    
     unsigned int hmapsizeLoc = glGetUniformLocation(shader.ID, "hmapsize");

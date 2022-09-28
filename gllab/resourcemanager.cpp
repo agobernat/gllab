@@ -8,7 +8,7 @@
 //#include "macros.hpp"
 #include <filesystem>
 
-//#include "tiny_gltf.h"
+#include "tiny_gltf.h"
 #include "stb_image.h"
 //#include "macros.hpp"
 
