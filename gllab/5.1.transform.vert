@@ -4,6 +4,7 @@ layout (location = 1) in vec2 aTexCoord;
 
 out vec2 TexCoord;
 
+
 uniform mat4 transform;
 uniform float heightmap[64*64];
 uniform int heightmapsize;

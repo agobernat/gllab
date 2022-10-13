@@ -152,6 +152,7 @@
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp" />
+    <ClCompile Include="levelloader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="physicsengine.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="gameobject.hpp" />
     <ClInclude Include="globals.hpp" />
     <ClInclude Include="include\shader_t.h" />
+    <ClInclude Include="levelloader.hpp" />
     <ClInclude Include="model.hpp" />
     <ClInclude Include="physicsengine.hpp" />
     <ClInclude Include="resourcemanager.hpp" />

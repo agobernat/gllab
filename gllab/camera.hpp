@@ -13,6 +13,7 @@ public:
 
 	void move(float x, float y);
 	const glm::mat4 view() const;
+	const glm::mat4 projection() const;
 
 	glm::vec3 front, pos, up;
 	int lastX, lastY;
@@ -20,6 +21,8 @@ private:
 	float yaw;
 	float pitch;
 	float fov;
+
+	glm::mat4 proj;
 
 	
 };

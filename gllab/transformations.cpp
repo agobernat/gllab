@@ -111,6 +111,7 @@ int main()
     shaderManager.loadShader("terrain", "terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
     shaderManager.loadShader("defaultmodel", "tree1.vert", "tree1.frag");
     shaderManager.setDefaultShader("defaultmodel");
+    shaderManager.setMaterial("defaultmodel", "Material");
 
 	position = glm::vec3(0, 0, 0);
 
@@ -131,20 +132,37 @@ int main()
 
 
 
-    std::string mdlpath("resources\\models\\Tree_01.gltf");
+    //std::string mdlpath("resources\\models\\Tree_01.gltf");
     //std::string mdlpath("resources\\models\\rivercorner.gltf");
     //std::string mdlpath("resources\\models\\Cube.gltf");
     //std::string mdlpath("resources\\models\\tent.gltf");
-    GameModel tree;
-    tree.loadFromFile(mdlpath);
-    tree.bind();
-     
-    //tree.dbgModel(model);
-   
+    //std::string mdlpath("resources\\models\\platform.gltf");
+    std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
+    std::string mdlpath("resources\\models\\block.gltf");
 
- 
-    Sprite box = Sprite(shaderManager.getShader("box"));
-    Sprite kid = Sprite(shaderManager.getShader("box"));
+    
+    GameModel box;
+    box.loadFromFile(mdlpath);
+    box.bind();
+    GameModel kidmodel;
+    kidmodel.loadFromFile(mdlpath2);
+    kidmodel.bind();
+    GameObject kid(kidmodel);
+
+    //box2.scale(glm::dvec3(0.5, 0.5, 0.5));
+    //box2.translate(glm::dvec3(2.0, 0.0, 0.0));
+    auto boxes = std::vector<GameObject>();
+    
+    boxes.reserve(20);
+
+
+    for (size_t i = 0; i < 20; i++)
+    {
+        boxes.push_back(GameObject(box));
+        boxes[i].scale(glm::dvec3(0.5, 0.5, 0.5));
+        boxes[i].translate(glm::dvec3(1.0 * i, 0.0, 0.0));
+    }
+
 
     cam = Camera(glm::vec3(0.0f, 4.0f, 5.0f),
                  glm::vec3(0.0f, 0.0f, - 1.0f),
@@ -187,14 +205,13 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        tree.draw(cam);
+        for (const auto& obj : boxes) {
+            obj.draw(cam);
+        }
 
-        //kid.Draw(glm::vec3(-position.x * 2, position.y, position.z), texture2, cam.view());
-        //box.Draw(position, texture1, cam.view());
-        //kid.Draw(glm::vec3(-position.x, position.y, position.z), texture2, cam.view());
-        
-        
-        terrain.draw(currt, cam);
+        kid.draw(cam);
+
+        //terrain.draw(currt, cam);
         
         glfwSwapBuffers(window);
 

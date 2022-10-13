@@ -3,8 +3,6 @@
 #pragma warning(push)
 #pragma warning(suppress)
 
-
-
 #include "tiny_gltf.h"
 
 #pragma warning(pop)
@@ -18,9 +16,11 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "gameobject.hpp"
 
 
 
+struct Transform;
 class GameModel
 {
 private: struct PrimitiveData;
@@ -32,17 +32,21 @@ public:
 	struct PrimitiveData;
 	std::map<int, PrimitiveData> calculatePrimitiveBufferParams(tinygltf::Mesh& mesh);
 
-	void bindMesh(tinygltf::Mesh& mesh);
+	glm::mat4 calculateModelMat(const tinygltf::Node& node, const Transform& transform) const;
+
+	void bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node);
 
 	void bindModelNodes(tinygltf::Node& node);
 
 	void bind();
 
-	void drawMesh(tinygltf::Mesh& mesh, const Camera& camera);
+	void drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform) const;
 
-	void drawModelNodes(tinygltf::Node& node, const Camera& camera);
+	void drawModelNodes(tinygltf::Node& node, const Camera& camera, const Transform& transform) const;
 
-	void draw(const Camera& camera);
+	void draw(const Camera& camera) const;
+
+	void draw(const Camera& camera, const Transform& transform) const;
 
 	void dbgModel();
 
@@ -60,7 +64,11 @@ private:
 	glm::mat4 model_rot;
 	glm::vec3 model_pos;
 	glm::mat4 view_mat;
-	tinygltf::Model* modelData;
+	std::unique_ptr<tinygltf::Model> modelData;
+
+	struct SceneData {
+		
+	};
 
 	struct BufferData
 	{
@@ -73,6 +81,7 @@ private:
 
 	struct PrimitiveData
 	{
+		GLuint texture;
 		const Shader* shader;
 		size_t currentBufferOffset;
 		GLuint vao;

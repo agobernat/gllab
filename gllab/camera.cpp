@@ -9,6 +9,8 @@ Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up) : pos(pos), front(f
     fov = 80.0f;
     lastX = Static::SCR_WIDTH / 2.0;
     lastY = Static::SCR_HEIGHT / 2.0;
+
+    proj = glm::perspective(glm::radians(45.0f), (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT, 0.1f, 10000.0f);
 }
 
 
@@ -24,6 +26,11 @@ const glm::mat4 Camera::view() const {
 
     return glm::lookAt(pos, pos + front, up);
 
+}
+
+const glm::mat4 Camera::projection() const
+{
+    return proj;
 }
 
 void Camera::move(float x, float y) {

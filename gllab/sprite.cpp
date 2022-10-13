@@ -92,16 +92,6 @@ void Sprite::initRenderData()
     glBindVertexArray(0);
 
 
-
-    
-
-
-
-
-
-
-
-
 }
 
 void Sprite::Draw(glm::vec3 position, unsigned int texture, glm::mat4 view)
