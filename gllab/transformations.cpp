@@ -5,8 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <reactphysics3d/reactphysics3d.h>
-
 #include <stdlib.h>
 #include <time.h>
 
@@ -450,15 +448,15 @@ void processInput(GLFWwindow *window)
         playerdata.movingright = false;
     }
 	
-	if (keys[GLFW_KEY_UP])
-	{
-        playerdata.ypos += dts * 50 * 3 / 32;
-    
-	}
-	else if (keys[GLFW_KEY_DOWN])
-	{
-        playerdata.ypos -= dts * 50 * 3 / 32;
-	}
+	//if (keys[GLFW_KEY_UP])
+	//{
+    //    playerdata.ypos += dts * 50 * 3 / 32;
+    //
+	//}
+	//else if (keys[GLFW_KEY_DOWN])
+	//{
+    //    playerdata.ypos -= dts * 50 * 3 / 32;
+	//}
 
     if (keys[GLFW_KEY_C] && !playerdata.jumpheld)
     {
@@ -475,6 +473,9 @@ void processInput(GLFWwindow *window)
         playerdata.xpos = playerdata.playerstart.x;
         playerdata.ypos = playerdata.playerstart.y;
         playerdata.vspeed = 0;
+        cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
+            glm::vec3(0.0f, 0.0f, -1.0f),
+            glm::vec3(0.0f, 1.0f, 0.0f));
     }
 
     float cameraSpeed;
