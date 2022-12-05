@@ -10,7 +10,13 @@ Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up) : pos(pos), front(f
     lastX = Static::SCR_WIDTH / 2.0;
     lastY = Static::SCR_HEIGHT / 2.0;
 
+    const int unit_size = 1;
+    float n = 25.0f * unit_size;
+    const auto aspect = (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT;
+    float left = -n * 0.5f, right = n * 0.5f, down = -n * 0.5f / aspect, upf = n * 0.5f / aspect;
     proj = glm::perspective(glm::radians(45.0f), (float)Static::SCR_WIDTH / (float)Static::SCR_HEIGHT, 0.1f, 10000.0f);
+    //proj = glm::ortho(left, right, down, upf, 0.01f, 100.0f); // 
+
 }
 
 

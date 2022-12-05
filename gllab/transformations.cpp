@@ -1,8 +1,3 @@
-
-
-
-
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -10,7 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
+#include <reactphysics3d/reactphysics3d.h>
 
 #include <stdlib.h>
 #include <time.h>
@@ -39,9 +34,10 @@
 #include "terrain.hpp"
 #include "terraingen.hpp"
 #include "camera.hpp"
-
+#include "levelloader.hpp"
 #include "static.hpp"
 #include "globals.hpp"
+#include "collider.h"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -55,9 +51,45 @@ Camera cam;
 // settings
 
 
+struct PlayerData {
+    double xpos;
+    double ypos;
+    double vspeed;
+    bool jumpheld = false;
+    bool movingleft = false;
+    bool movingright = false;
+    int jumpamount = 0;
+    glm::dvec2 playerstart;
+
+    double gravity = 0.45;
+    void tick(double dt) {
+        ypos += vspeed;
+        if (vspeed > 0 && jumpheld)
+        {
+            vspeed -= gravity * dt * 0.5;
+        }
+        else if (vspeed > -0.2) {
+            vspeed -= gravity * dt;
+        }
+
+    }
+    void jump() {
+        if (jumpamount > 0)
+        {
+            vspeed = 0.12;
+            jumpamount -= 1;
+        }
+        
+    }
+};
+
+PlayerData playerdata;
+
+
+
 
 bool keys[1024];
-glm::vec3 position;
+
 float dts;
 float prevt;
 float start;
@@ -66,6 +98,7 @@ float currt;
 
 int main()
 {
+    playerdata.vspeed = 0;
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -102,6 +135,7 @@ int main()
     Static::init();
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
 
     // build and compile our shader zprogram
@@ -113,7 +147,9 @@ int main()
     shaderManager.setDefaultShader("defaultmodel");
     shaderManager.setMaterial("defaultmodel", "Material");
 
-	position = glm::vec3(0, 0, 0);
+    playerdata.xpos = 0;
+    playerdata.ypos = 0;
+
 
     // load and create a texture 
     // -------------------------
@@ -131,14 +167,18 @@ int main()
     unsigned int texture7 = ResourceManager::LoadTexture("resources\\textures\\iceland_heightmap.png", GL_RGB, GL_RGB, GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR);
 
 
-
     //std::string mdlpath("resources\\models\\Tree_01.gltf");
     //std::string mdlpath("resources\\models\\rivercorner.gltf");
     //std::string mdlpath("resources\\models\\Cube.gltf");
     //std::string mdlpath("resources\\models\\tent.gltf");
     //std::string mdlpath("resources\\models\\platform.gltf");
+    std::string mdlpath3("resources\\models\\needle.gltf");
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
+    LevelLoader loader;
+    auto level = loader.loadFromFile("level1.txt");
+
+
 
     
     GameModel box;
@@ -147,24 +187,118 @@ int main()
     GameModel kidmodel;
     kidmodel.loadFromFile(mdlpath2);
     kidmodel.bind();
-    GameObject kid(kidmodel);
+    GameModel spikemodel;
+    spikemodel.loadFromFile(mdlpath3);
+    spikemodel.bind();
+    //GameObject kid(kidmodel);
 
     //box2.scale(glm::dvec3(0.5, 0.5, 0.5));
     //box2.translate(glm::dvec3(2.0, 0.0, 0.0));
-    auto boxes = std::vector<GameObject>();
+    auto boxes = std::vector<GameObject*>();
+    auto colliders = std::vector<Collider*>();
+    auto blocks = std::vector<Collider*>();
+   
+    //Collider* kidcollider = nullptr;
+    
+    //auto colliders = std::vector<>();
+
+
+
     
     boxes.reserve(20);
+    GameObject* kidspritetest = nullptr;
 
 
-    for (size_t i = 0; i < 20; i++)
+    for (size_t i = 0; i < level.size(); i++)
+    {
+        for (size_t j = 0; j < level[i].size(); j++)
+        {
+            const auto& tile = level[i][j];
+            
+
+            if (tile == 1)
+            {
+                GameObject* kid = new GameObject(kidmodel);
+                playerdata.playerstart = glm::dvec2(static_cast<float>(j), -static_cast<float>(i));
+                kid->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
+                playerdata.xpos = static_cast<double>(j);
+                playerdata.ypos = -static_cast<double>(i);
+                kid->scale(glm::dvec3(0.5, 0.5, 0.5));
+                //kid->objecttype = "kid";
+                boxes.push_back(kid);
+                kidspritetest = kid;
+
+                auto coll = new Collider();
+                coll->bottomleft = glm::vec2(0.2, 0.0);
+                coll->topright = glm::vec2(0.9, 1.0);
+                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
+                coll->type = Collider::Kid;
+                
+                kid->collider = coll;
+                
+
+            }
+            else if (tile == 2) {
+                GameObject* block = new GameObject(box);
+                block->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
+                block->scale(glm::dvec3(0.5, 0.5, 0.5));
+                //block->objecttype = "block";
+                boxes.push_back(block);
+                
+                auto coll = Collider::unitBox();
+                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
+                coll->type = Collider::Block;
+                colliders.push_back(coll);
+                block->collider = colliders[colliders.size() - 1];
+                blocks.push_back(block->collider);
+
+            }
+            else if (tile >= 3) {
+
+                GameObject* spike = new GameObject(spikemodel);
+                spike->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
+                spike->scale(glm::dvec3(0.5, 0.5, 0.5));
+                
+
+                if (tile == 4) {
+                    spike->rotate(1.0 / 2.0 * 3.1415f, glm::dvec3(0.0, 0.0, 1.0));
+                    
+                }
+                else if (tile == 5)
+                {
+                    spike->rotate(3.1415f, glm::dvec3(0.0, 0.0, 1.0));
+                    
+                }
+                else if (tile == 6)
+                {
+                    spike->rotate(3.0 / 2.0 * 3.1415f, glm::dvec3(0.0, 0.0, 1.0));
+                    
+                }
+                spike->objecttype = "spike";
+                boxes.push_back(spike);
+
+                auto coll = Collider::unitBox();
+                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
+                coll->type = Collider::Spike;
+                colliders.push_back(coll);
+                spike->collider = colliders[colliders.size() - 1];
+            }
+            
+            
+        }
+    }
+
+    
+
+    /*for (size_t i = 0; i < 20; i++)
     {
         boxes.push_back(GameObject(box));
         boxes[i].scale(glm::dvec3(0.5, 0.5, 0.5));
         boxes[i].translate(glm::dvec3(1.0 * i, 0.0, 0.0));
-    }
+    }*/
 
 
-    cam = Camera(glm::vec3(0.0f, 4.0f, 5.0f),
+    cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
                  glm::vec3(0.0f, 0.0f, - 1.0f),
                  glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -191,25 +325,81 @@ int main()
     loaded.push_back(std::pair(-2, 0));
     
 
-    
+
+
 
 	prevt = (float)glfwGetTime();
+    float delaytime;
+    delaytime = prevt;
 	start = prevt;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
         currt = (float)glfwGetTime();
+        //delaytime = (float)glfwGetTime();
+        //std::cout << currt << " " << delaytime << "\n";
+        if (currt - delaytime > 0.2f) {
+            delaytime = currt;
+            
+            kidspritetest->collider->printbounds();
+            
+            std::cout << "\n";
+           
+        }
+
+        for (const auto& item : colliders)
+        {
+            if (kidspritetest->collider->collWithOther(*item))
+            {
+                if (item->type == Collider::Spike)
+                {
+                    playerdata.xpos = playerdata.playerstart.x;
+                    playerdata.ypos = playerdata.playerstart.y;
+                    playerdata.vspeed = 0;
+                    std::cout << "death";
+                }
+                else if (playerdata.vspeed > 0)
+                {
+                    playerdata.ypos = item->bottomleft.y + item->transform.y - 1;
+                }
+                else if (playerdata.vspeed < 0)
+                {
+                    playerdata.jumpamount = 2;
+                    playerdata.ypos = item->topright.y + item->transform.y;
+                }
+
+                playerdata.vspeed = 0;
+            }
+
+        }
+
+        if (playerdata.movingright) {
+            kidspritetest->setRotation(0, glm::dvec3(0.0, 1.0, 0.0));
+        }
+        if (playerdata.movingleft) {
+            kidspritetest->setRotation(3.1415, glm::dvec3(0.0, 1.0, 0.0));
+        }
+
         processInput(window);
+        cam.pos = glm::vec3(playerdata.xpos, playerdata.ypos, cam.pos.z);
+        auto translatetest = kidspritetest->getTransformVec();
+        kidspritetest->setTranslate(glm::dvec3(playerdata.xpos, playerdata.ypos, translatetest.z));
+        kidspritetest->collider->moveTo(glm::dvec2(playerdata.xpos, playerdata.ypos));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (const auto& obj : boxes) {
-            obj.draw(cam);
+            obj->draw(cam);
         }
+        
 
-        kid.draw(cam);
+        
+
+        
+
+        //kid.draw(cam);
 
         //terrain.draw(currt, cam);
         
@@ -218,18 +408,20 @@ int main()
         glfwPollEvents();
     }
 
-    
+
     glfwTerminate();
     return 0;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
+
 void processInput(GLFWwindow *window)
 {
 	
 	dts = currt - prevt;
 	prevt = currt;
+    
 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -238,23 +430,52 @@ void processInput(GLFWwindow *window)
 		glfwSetWindowShouldClose(window, true);
 	if (keys[GLFW_KEY_LEFT])
 	{
-		position.x += dts;
+        playerdata.movingleft = true;
+        playerdata.movingright = false;
+        playerdata.xpos -= dts * 50 * 3 / 32;
 		
 	}
 	else if (keys[GLFW_KEY_RIGHT])
 	{
-		position.x -= dts;
+        playerdata.movingleft = false;
+        playerdata.movingright = true;
+        playerdata.xpos += dts * 50 * 3 / 32;
 	}
+    if (!keys[GLFW_KEY_LEFT])
+    {
+        playerdata.movingleft = false;
+    }
+    if (!keys[GLFW_KEY_RIGHT])
+    {
+        playerdata.movingright = false;
+    }
 	
 	if (keys[GLFW_KEY_UP])
 	{
-		position.y += dts;
-
+        playerdata.ypos += dts * 50 * 3 / 32;
+    
 	}
 	else if (keys[GLFW_KEY_DOWN])
 	{
-		position.y -= dts;
+        playerdata.ypos -= dts * 50 * 3 / 32;
 	}
+
+    if (keys[GLFW_KEY_C] && !playerdata.jumpheld)
+    {
+        playerdata.jumpheld = true;
+        playerdata.jump();
+    }
+    else if (!keys[GLFW_KEY_C])
+    {
+        playerdata.jumpheld = false;
+    }
+
+    if (keys[GLFW_KEY_R])
+    {
+        playerdata.xpos = playerdata.playerstart.x;
+        playerdata.ypos = playerdata.playerstart.y;
+        playerdata.vspeed = 0;
+    }
 
     float cameraSpeed;
     if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
@@ -279,7 +500,7 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         std::cout << cam.front.x << ", " << cam.front.y << ", " << cam.front.z << std::endl;
     
-	
+    playerdata.tick(dts);
 	countfps();
 
 }
@@ -310,6 +531,8 @@ void countfps()
 		//std::cout << fpscounter + 1 << " fps" << std::endl;
         //std::cout << "x:" << cam.lastX << ", y:" << cam.lastY << std::endl;
         //std::cout << glfwGetTime();
+
+        
 		fpscounter = 0;
 		start = currt;
 	}

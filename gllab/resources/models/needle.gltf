@@ -1,0 +1,142 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v3.3.27",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Cube"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "Material",
+            "pbrMetallicRoughness" : {
+                "baseColorTexture" : {
+                    "index" : 0
+                },
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cube",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1,
+                        "TEXCOORD_0" : 2
+                    },
+                    "indices" : 3,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "textures" : [
+        {
+            "sampler" : 0,
+            "source" : 0
+        }
+    ],
+    "images" : [
+        {
+            "bufferView" : 4,
+            "mimeType" : "image/png",
+            "name" : "spike"
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 16,
+            "max" : [
+                1,
+                1,
+                1
+            ],
+            "min" : [
+                -1,
+                -1,
+                -1
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 16,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 16,
+            "type" : "VEC2"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5123,
+            "count" : 18,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 192,
+            "byteOffset" : 0,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 192,
+            "byteOffset" : 192,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 128,
+            "byteOffset" : 384,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 36,
+            "byteOffset" : 512,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 258,
+            "byteOffset" : 548
+        }
+    ],
+    "samplers" : [
+        {
+            "magFilter" : 9728,
+            "minFilter" : 9984
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 808,
+            "uri" : "data:application/octet-stream;base64,AACAPwAAgL8AAIC/AACAPwAAgL8AAIC/AACAPwAAgL8AAIC/AAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAAAAAAAAgD8AAACAAACAPwAAgL8AAIA/AACAPwAAgL8AAIA/AACAPwAAgL8AAIA/AACAvwAAgL8AAIC/AACAvwAAgL8AAIC/AACAvwAAgL8AAIC/AACAvwAAgL8AAIA/AACAvwAAgL8AAIA/AACAvwAAgL8AAIA/AAAAAAAAgL8AAACAAAAAAC755D4u+WS/LvlkPy755D4AAACALvlkvy755D4AAACAAAAAAC755D4u+WS/AAAAAC755D4u+WQ/LvlkPy755D4AAACAAAAAAAAAgL8AAACAAAAAAC755D4u+WQ/LvlkPy755D4AAACALvlkvy755D4AAACAAAAAAAAAgL8AAACAAAAAAC755D4u+WS/Lvlkvy755D4AAACAAAAAAAAAgL8AAACAAAAAAC755D4u+WQ/x9H4PopCYT8AAHA/AAB4PwAAcD8AAHg/AAAAPwAAwD0AAAA/AADAPQAAAD8AAMA9AAAAPwAAwD0AAKA+AAAwPwAAgD0AAHg/AACAPQAAeD8AAIA9AAB4PwAAoD4AADA/AACAPQAAeD8AAHA/AAB4P8fR+D4AAAA/AABwPwAAeD8IAAUADwANAAMACgALAAAABwALAAcADgACAAYACQAMAAQAAQCJUE5HDQoaCgAAAA1JSERSAAAAIAAAACAIBgAAAHN6evQAAADJSURBVHic1dWxDYMwEIXhi0TBArjLLqxDmUlSso4XSMkE6cwC6UAX6UlWRMA+jHX3NzTI+H0NDXlP0tq+X/j58f4mPaMRf71Q4gvw+tc0kXOO7l23SBVsCmA9F0Kg9zyLFewJxOvRGQVbAlvrkVTBjgCvf47j4Xu5CjYEUtejHAX9ArnrUaqCbgHpepSioFfg7Hp0pKBToNR6tKegT6D0em7vT6lL4Ir16J+CHoEr16MtBR0CNdajXwUFAhXXo1jhK/AYhqoXiFsBpRGtKIbhrNYAAAAASUVORK5CYIIAAA=="
+        }
+    ]
+}

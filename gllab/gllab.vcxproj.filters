@@ -113,6 +113,12 @@
     <ClInclude Include="levelloader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\reactphysics3d\reactphysics3d.h">
+      <Filter>Imports</Filter>
+    </ClInclude>
+    <ClInclude Include="collider.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="5.1.transform.frag">
@@ -145,5 +151,10 @@
     <None Include="tree1.frag">
       <Filter>Shaders</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="level1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
