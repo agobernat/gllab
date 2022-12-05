@@ -3,7 +3,6 @@
 #include "sprite.hpp"
 #include <glm/glm.hpp>
 #include "model.hpp"
-#include "include/reactphysics3d/reactphysics3d.h"
 #include "collider.h"
 
 struct Transform {

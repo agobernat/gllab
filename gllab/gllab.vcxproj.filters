@@ -19,6 +19,9 @@
     <Filter Include="Imports">
       <UniqueIdentifier>{81022f2d-0649-4dea-9aae-6335c0734a57}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lib">
+      <UniqueIdentifier>{4345b6bc-0cbb-46ef-8230-ddc1649cd5ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -112,9 +115,6 @@
     </ClInclude>
     <ClInclude Include="levelloader.hpp">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\reactphysics3d\reactphysics3d.h">
-      <Filter>Imports</Filter>
     </ClInclude>
     <ClInclude Include="collider.h">
       <Filter>Header Files</Filter>
