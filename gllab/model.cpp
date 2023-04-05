@@ -299,6 +299,16 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinyg
         prim.shader->setMat4("projection", camera.projection());
         prim.shader->setMat4("view", camera.view());
         prim.shader->setMat4("model", calculateModelMat(node, transform));
+        
+
+        if (transform.scale[0][0] * transform.scale[1][1] * transform.scale[2][2] < 0)
+        {
+            glFrontFace(GL_CW);
+        }
+        else
+        {
+            glFrontFace(GL_CCW);
+        }
 
         const auto& baseclr = modelData->materials[primitive.material].pbrMetallicRoughness.baseColorFactor;
         prim.shader->setVec4("baseColorFactor", glm::vec4(baseclr[0], baseclr[1], baseclr[2], baseclr[3]));

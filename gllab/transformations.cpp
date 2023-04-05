@@ -234,86 +234,18 @@ int main()
 
     for (size_t i = 0; i < level.size(); i++)
     {
-        for (size_t j = 0; j < level[i].size(); j++)
+        GameObject* object;
+        switch (level[i].second)
         {
-            auto tile = level[i][j];
-
-            
-
-            std::bitset<32> btst = tile;
-            std::cout << btst;
-            std::cout << std::endl;
-            /*
-            if (tile == 1)
-            {
-                GameObject* kid = new GameObject(kidmodel);
-                playerdata.playerstart = glm::dvec2(static_cast<float>(j), -static_cast<float>(i));
-                kid->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
-                playerdata.xpos = static_cast<double>(j);
-                playerdata.ypos = -static_cast<double>(i);
-                kid->scale(glm::dvec3(0.5, 0.5, 0.5));
-                //kid->objecttype = "kid";
-                boxes.push_back(kid);
-                kidspritetest = kid;
-
-                auto coll = new Collider();
-                coll->bottomleft = glm::vec2(0.2, 0.0);
-                coll->topright = glm::vec2(0.9, 1.0);
-                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
-                coll->type = Collider::Kid;
-                
-                kid->collider = coll;
-                
-
-            }
-            else if (tile == 2) {
-                GameObject* block = new GameObject(box);
-                block->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
-                block->scale(glm::dvec3(0.5, 0.5, 0.5));
-                //block->objecttype = "block";
-                boxes.push_back(block);
-                
-                auto coll = Collider::unitBox();
-                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
-                coll->type = Collider::Block;
-                colliders.push_back(coll);
-                block->collider = colliders[colliders.size() - 1];
-                blocks.push_back(block->collider);
-
-            }
-            else if (tile >= 3) {
-
-                GameObject* spike = new GameObject(spikemodel);
-                spike->translate(glm::dvec3(static_cast<float>(j), -static_cast<float>(i), 0.0f));
-                spike->scale(glm::dvec3(0.5, 0.5, 0.5));
-                
-
-                if (tile == 4) {
-                    spike->rotate(1.0 / 2.0 * 3.1415f, glm::dvec3(0.0, 0.0, 1.0));
-                    
-                }
-                else if (tile == 5)
-                {
-                    spike->rotate(3.1415f, glm::dvec3(0.0, 0.0, 1.0));
-                    
-                }
-                else if (tile == 6)
-                {
-                    spike->rotate(3.0 / 2.0 * 3.1415f, glm::dvec3(0.0, 0.0, 1.0));
-                    
-                }
-                spike->objecttype = "spike";
-                boxes.push_back(spike);
-
-                auto coll = Collider::unitBox();
-                coll->moveTo(glm::dvec2(static_cast<float>(j), -static_cast<float>(i)));
-                coll->type = Collider::Spike;
-                colliders.push_back(coll);
-                spike->collider = colliders[colliders.size() - 1];
-            }*/
-            
-            
+        case(0):
+            object = new GameObject(box);
+            object->setTransformMat(level[i].first);
+            boxes.push_back(object);
+            break;
+        default:
+            break;
         }
+        
     }
 
     
@@ -371,7 +303,7 @@ int main()
         if (currt - delaytime > 0.2f) {
             delaytime = currt;
             
-            kidspritetest->collider->printbounds();
+           // kidspritetest->collider->printbounds();
             
             std::cout << "\n";
            
@@ -405,18 +337,18 @@ int main()
 
         }
 
-        if (playerdata.movingright) {
-            kidspritetest->setRotation(0, glm::dvec3(0.0, 1.0, 0.0));
-        }
-        if (playerdata.movingleft) {
-            kidspritetest->setRotation(3.1415, glm::dvec3(0.0, 1.0, 0.0));
-        }
+        //if (playerdata.movingright) {
+        //    kidspritetest->setRotation(0, glm::dvec3(0.0, 1.0, 0.0));
+        //}
+        //if (playerdata.movingleft) {
+        //    kidspritetest->setRotation(3.1415, glm::dvec3(0.0, 1.0, 0.0));
+        //}
 
         processInput(window);
-        cam.pos = glm::vec3(playerdata.xpos, playerdata.ypos, cam.pos.z);
-        auto translatetest = kidspritetest->getTransformVec();
-        kidspritetest->setTranslate(glm::dvec3(playerdata.xpos, playerdata.ypos, translatetest.z));
-        kidspritetest->collider->moveTo(glm::dvec2(playerdata.xpos, playerdata.ypos));
+        //cam.pos = glm::vec3(playerdata.xpos, playerdata.ypos, cam.pos.z);
+        //auto translatetest = kidspritetest->getTransformVec();
+        //kidspritetest->setTranslate(glm::dvec3(playerdata.xpos, playerdata.ypos, translatetest.z));
+        //kidspritetest->collider->moveTo(glm::dvec2(playerdata.xpos, playerdata.ypos));
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

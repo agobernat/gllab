@@ -37,6 +37,7 @@ public:
 	void scale(glm::dvec3 scale);
 	void translate(glm::dvec3 translate);
 	void setTranslate(glm::dvec3 translate);
+	void setTransformMat(Transform transform);
 	glm::dvec3 getTransformVec();
 	void setRotation(double angle, glm::dvec3 rot);
 	void rotate(double angle, glm::dvec3 axis);

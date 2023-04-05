@@ -25,6 +25,11 @@ void GameObject::setTranslate(glm::dvec3 translate) {
 	transform.translate = glm::translate(glm::dmat4(1.0), translate);
 }
 
+void GameObject::setTransformMat(Transform transform)
+{
+	this->transform = transform;
+}
+
 glm::dvec3 GameObject::getTransformVec() {
 	return glm::dvec3(transform.translate[3][0], transform.translate[3][1], transform.translate[3][2]);
 }
