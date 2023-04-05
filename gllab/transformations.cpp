@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <time.h>
+#include <bitset>
 
 
 #define TINYGLTF_IMPLEMENTATION
@@ -20,6 +21,8 @@
 #undef STB_IMAGE_IMPLEMENTATION
 #undef STB_IMAGE_WRITE_IMPLEMENTATION
 #undef STBI_MSC_SECURE_CRT
+
+#include "bullet/btBulletDynamicsCommon.h"
 
 
 #include "model.hpp"
@@ -174,11 +177,31 @@ int main()
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("level1.txt");
+    auto level = loader.loadFromFile("level1.csv");
+
+
+    btDefaultCollisionConfiguration* collisionConfiguration = new
+        btDefaultCollisionConfiguration();
+    btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
+    btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
+    btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+    btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
+        overlappingPairCache, solver, collisionConfiguration);
+
+    //btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
+    //btTransform groundTransform;
+    //groundTransform.setIdentity();
+    //groundTransform.setOrigin(btVector3(0, -50, 0));
+    //btScalar mass(0.);
+    //btVector3 localInertia(0, 0, 0);
+    //btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+    //btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+    //btRigidBody* body = new btRigidBody(rbInfo);
+    //dynamicsWorld->addRigidBody(body);
 
 
 
-    
+
     GameModel box;
     box.loadFromFile(mdlpath);
     box.bind();
@@ -201,19 +224,26 @@ int main()
     //auto colliders = std::vector<>();
 
 
-
     
     boxes.reserve(20);
     GameObject* kidspritetest = nullptr;
+
+
+
 
 
     for (size_t i = 0; i < level.size(); i++)
     {
         for (size_t j = 0; j < level[i].size(); j++)
         {
-            const auto& tile = level[i][j];
+            auto tile = level[i][j];
+
             
 
+            std::bitset<32> btst = tile;
+            std::cout << btst;
+            std::cout << std::endl;
+            /*
             if (tile == 1)
             {
                 GameObject* kid = new GameObject(kidmodel);
@@ -280,7 +310,7 @@ int main()
                 coll->type = Collider::Spike;
                 colliders.push_back(coll);
                 spike->collider = colliders[colliders.size() - 1];
-            }
+            }*/
             
             
         }
@@ -326,6 +356,7 @@ int main()
 
 
 
+
 	prevt = (float)glfwGetTime();
     float delaytime;
     delaytime = prevt;
@@ -345,6 +376,8 @@ int main()
             std::cout << "\n";
            
         }
+
+        //dynamicsWorld->stepSimulation(delaytime, 10);
 
         for (const auto& item : colliders)
         {
@@ -584,4 +617,5 @@ for (size_t i = 0; i < model.buffers[0].data.size(); i += 4)
     std::cout << *reinterpret_cast<float*>(&model.buffers[0].data.at(i)) << ", ";
 
 }*/
+
 
