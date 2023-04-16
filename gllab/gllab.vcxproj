@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="chunk.cpp" />
+    <ClCompile Include="debugdrawer.cpp" />
     <ClCompile Include="gameobject.cpp" />
     <ClCompile Include="globals.cpp" />
     <ClCompile Include="include\OpenSimplexNoise\OpenSimplexNoise.cpp" />
@@ -170,6 +171,7 @@
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="chunk.hpp" />
     <ClInclude Include="collider.h" />
+    <ClInclude Include="debugdrawer.hpp" />
     <ClInclude Include="gameobject.hpp" />
     <ClInclude Include="globals.hpp" />
     <ClInclude Include="include\shader_t.h" />
@@ -187,6 +189,8 @@
     <None Include="3d1st.vert" />
     <None Include="5.1.transform.frag" />
     <None Include="5.1.transform.vert" />
+    <None Include="lineshader.frag" />
+    <None Include="lineshader.vert" />
     <None Include="terrain.frag" />
     <None Include="terrain.geom" />
     <None Include="terrain.tesc" />

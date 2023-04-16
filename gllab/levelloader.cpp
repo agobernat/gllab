@@ -46,7 +46,7 @@ std::vector<std::pair<Transform, unsigned int>> LevelLoader::loadFromFile(const 
 
             Transform transform;
             transform.scale = glm::scale(transform.scale, glm::dvec3(0.5, 0.5, 0.5));
-            transform.translate = glm::translate(transform.translate, glm::dvec3(static_cast<double>(j), -static_cast<double>(i), 0.0f));
+            transform.translate = glm::translate(transform.translate, glm::dvec3(static_cast<double>(j), -static_cast<double>(i) + 30, 0.0f));
 
             switch (transformflags)
             {
@@ -54,12 +54,12 @@ std::vector<std::pair<Transform, unsigned int>> LevelLoader::loadFromFile(const 
                 std::cout << "000" << std::endl;
                 break;
             case(0b0010'0000'0000'0000'0000'0000'0000'0000):
-                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, -1.0, 1.0));
+                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, 1.0, -1.0));
                 transform.rotation = glm::rotate(transform.rotation, 3.1415 * (1.0 / 2.0), glm::dvec3(0.0, 0.0, 1.0));
                 std::cout << "001" << std::endl;
                 break;
             case(0b0100'0000'0000'0000'0000'0000'0000'0000):
-                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, -1.0, 1.0));
+                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, 1.0, -1.0));
                 std::cout << "010" << std::endl;
                 break;
             case(0b0110'0000'0000'0000'0000'0000'0000'0000):
@@ -67,7 +67,7 @@ std::vector<std::pair<Transform, unsigned int>> LevelLoader::loadFromFile(const 
                 std::cout << "011" << std::endl;
                 break;
             case(0b1000'0000'0000'0000'0000'0000'0000'0000):
-                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, -1.0, 1.0));
+                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, 1.0, -1.0));
                 transform.rotation = glm::rotate(transform.rotation, 3.1415 * (2.0 / 2.0), glm::dvec3(0.0, 0.0, 1.0));
                 std::cout << "100" << std::endl;
                 break;
@@ -80,7 +80,7 @@ std::vector<std::pair<Transform, unsigned int>> LevelLoader::loadFromFile(const 
                 std::cout << "110" << std::endl;
                 break;
             case(0b1110'0000'0000'0000'0000'0000'0000'0000):
-                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, -1.0, 1.0));
+                transform.scale = glm::scale(transform.scale, glm::dvec3(1.0, 1.0, -1.0));
                 transform.rotation = glm::rotate(transform.rotation, 3.1415 * (3.0 / 2.0), glm::dvec3(0.0, 0.0, 1.0));
                 std::cout << "111" << std::endl;
                 break;

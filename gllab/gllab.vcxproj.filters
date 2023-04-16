@@ -72,6 +72,9 @@
     <ClCompile Include="levelloader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="debugdrawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobject.hpp">
@@ -119,6 +122,9 @@
     <ClInclude Include="collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="debugdrawer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="5.1.transform.frag">
@@ -149,6 +155,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="tree1.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lineshader.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="lineshader.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -39,6 +39,7 @@
 #include "static.hpp"
 #include "globals.hpp"
 #include "collider.h"
+#include "debugdrawer.hpp"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -51,40 +52,6 @@ void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 Camera cam;
 // settings
 
-
-struct PlayerData {
-    double xpos;
-    double ypos;
-    double vspeed;
-    bool jumpheld = false;
-    bool movingleft = false;
-    bool movingright = false;
-    int jumpamount = 0;
-    glm::dvec2 playerstart;
-
-    double gravity = 0.45;
-    void tick(double dt) {
-        ypos += vspeed;
-        if (vspeed > 0 && jumpheld)
-        {
-            vspeed -= gravity * dt * 0.5;
-        }
-        else if (vspeed > -0.2) {
-            vspeed -= gravity * dt;
-        }
-
-    }
-    void jump() {
-        if (jumpamount > 0)
-        {
-            vspeed = 0.12;
-            jumpamount -= 1;
-        }
-        
-    }
-};
-
-PlayerData playerdata;
 
 
 
@@ -99,7 +66,7 @@ float currt;
 
 int main()
 {
-    playerdata.vspeed = 0;
+   
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -148,8 +115,6 @@ int main()
     shaderManager.setDefaultShader("defaultmodel");
     shaderManager.setMaterial("defaultmodel", "Material");
 
-    playerdata.xpos = 0;
-    playerdata.ypos = 0;
 
 
     // load and create a texture 
@@ -177,7 +142,7 @@ int main()
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("level1.csv");
+    auto level = loader.loadFromFile("untitled3.csv");
 
 
     btDefaultCollisionConfiguration* collisionConfiguration = new
@@ -188,18 +153,22 @@ int main()
     btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
 
-    //btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(50.), btScalar(50.), btScalar(50.)));
-    //btTransform groundTransform;
-    //groundTransform.setIdentity();
-    //groundTransform.setOrigin(btVector3(0, -50, 0));
-    //btScalar mass(0.);
-    //btVector3 localInertia(0, 0, 0);
-    //btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-    //btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-    //btRigidBody* body = new btRigidBody(rbInfo);
-    //dynamicsWorld->addRigidBody(body);
+    //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
+    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+    btTransform groundTransform;
+    groundTransform.setIdentity();
+    groundTransform.setOrigin(btVector3(0, -1, 0));
+    btScalar mass(0.);
+    btVector3 localInertia(0, 0, 0);
+    btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+    btRigidBody* body = new btRigidBody(rbInfo);
+    dynamicsWorld->addRigidBody(body);
 
+    DebugDrawer debugDrawer;
+    dynamicsWorld->setDebugDrawer(&debugDrawer);
+    dynamicsWorld->getDebugDrawer()->setDebugMode(btIDebugDraw::DBG_DrawWireframe);
 
 
     GameModel box;
@@ -211,40 +180,37 @@ int main()
     GameModel spikemodel;
     spikemodel.loadFromFile(mdlpath3);
     spikemodel.bind();
-    //GameObject kid(kidmodel);
 
-    //box2.scale(glm::dvec3(0.5, 0.5, 0.5));
-    //box2.translate(glm::dvec3(2.0, 0.0, 0.0));
     auto boxes = std::vector<GameObject*>();
     auto colliders = std::vector<Collider*>();
     auto blocks = std::vector<Collider*>();
    
-    //Collider* kidcollider = nullptr;
-    
-    //auto colliders = std::vector<>();
 
 
     
     boxes.reserve(20);
     GameObject* kidspritetest = nullptr;
 
-
+    
 
 
 
     for (size_t i = 0; i < level.size(); i++)
     {
-        GameObject* object;
+        GameObject* object = nullptr;
         switch (level[i].second)
         {
         case(0):
             object = new GameObject(box);
-            object->setTransformMat(level[i].first);
-            boxes.push_back(object);
+            break;
+        case(1):
+            object = new GameObject(spikemodel);
             break;
         default:
             break;
         }
+        object->setTransformMat(level[i].first);
+        boxes.push_back(object);
         
     }
 
@@ -286,7 +252,7 @@ int main()
     
 
 
-
+    
 
 
 	prevt = (float)glfwGetTime();
@@ -309,46 +275,11 @@ int main()
            
         }
 
-        //dynamicsWorld->stepSimulation(delaytime, 10);
 
-        for (const auto& item : colliders)
-        {
-            if (kidspritetest->collider->collWithOther(*item))
-            {
-                if (item->type == Collider::Spike)
-                {
-                    playerdata.xpos = playerdata.playerstart.x;
-                    playerdata.ypos = playerdata.playerstart.y;
-                    playerdata.vspeed = 0;
-                    std::cout << "death";
-                }
-                else if (playerdata.vspeed > 0)
-                {
-                    playerdata.ypos = item->bottomleft.y + item->transform.y - 1;
-                }
-                else if (playerdata.vspeed < 0)
-                {
-                    playerdata.jumpamount = 2;
-                    playerdata.ypos = item->topright.y + item->transform.y;
-                }
-
-                playerdata.vspeed = 0;
-            }
-
-        }
-
-        //if (playerdata.movingright) {
-        //    kidspritetest->setRotation(0, glm::dvec3(0.0, 1.0, 0.0));
-        //}
-        //if (playerdata.movingleft) {
-        //    kidspritetest->setRotation(3.1415, glm::dvec3(0.0, 1.0, 0.0));
-        //}
+        
 
         processInput(window);
-        //cam.pos = glm::vec3(playerdata.xpos, playerdata.ypos, cam.pos.z);
-        //auto translatetest = kidspritetest->getTransformVec();
-        //kidspritetest->setTranslate(glm::dvec3(playerdata.xpos, playerdata.ypos, translatetest.z));
-        //kidspritetest->collider->moveTo(glm::dvec2(playerdata.xpos, playerdata.ypos));
+        
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -366,6 +297,11 @@ int main()
 
         //terrain.draw(currt, cam);
         
+        glClear(GL_DEPTH_BUFFER_BIT);
+        debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());
+        dynamicsWorld->stepSimulation(delaytime, 10);
+        dynamicsWorld->debugDrawWorld();
+
         glfwSwapBuffers(window);
 
         glfwPollEvents();
@@ -393,51 +329,29 @@ void processInput(GLFWwindow *window)
 		glfwSetWindowShouldClose(window, true);
 	if (keys[GLFW_KEY_LEFT])
 	{
-        playerdata.movingleft = true;
-        playerdata.movingright = false;
-        playerdata.xpos -= dts * 50 * 3 / 32;
 		
 	}
 	else if (keys[GLFW_KEY_RIGHT])
 	{
-        playerdata.movingleft = false;
-        playerdata.movingright = true;
-        playerdata.xpos += dts * 50 * 3 / 32;
 	}
     if (!keys[GLFW_KEY_LEFT])
     {
-        playerdata.movingleft = false;
     }
     if (!keys[GLFW_KEY_RIGHT])
     {
-        playerdata.movingright = false;
     }
-	
-	//if (keys[GLFW_KEY_UP])
-	//{
-    //    playerdata.ypos += dts * 50 * 3 / 32;
-    //
-	//}
-	//else if (keys[GLFW_KEY_DOWN])
-	//{
-    //    playerdata.ypos -= dts * 50 * 3 / 32;
-	//}
 
-    if (keys[GLFW_KEY_C] && !playerdata.jumpheld)
+    if (keys[GLFW_KEY_C])
     {
-        playerdata.jumpheld = true;
-        playerdata.jump();
+
     }
     else if (!keys[GLFW_KEY_C])
     {
-        playerdata.jumpheld = false;
+
     }
 
     if (keys[GLFW_KEY_R])
     {
-        playerdata.xpos = playerdata.playerstart.x;
-        playerdata.ypos = playerdata.playerstart.y;
-        playerdata.vspeed = 0;
         cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
             glm::vec3(0.0f, 0.0f, -1.0f),
             glm::vec3(0.0f, 1.0f, 0.0f));
@@ -466,7 +380,6 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
         std::cout << cam.front.x << ", " << cam.front.y << ", " << cam.front.z << std::endl;
     
-    playerdata.tick(dts);
 	countfps();
 
 }
