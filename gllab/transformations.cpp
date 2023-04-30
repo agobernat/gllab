@@ -142,7 +142,7 @@ int main()
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("untitled3.csv");
+    auto level = loader.loadFromFile("newmap.csv");
 
 
     btDefaultCollisionConfiguration* collisionConfiguration = new
@@ -152,6 +152,7 @@ int main()
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
     btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
+    dynamicsWorld->setGravity(btVector3(0., -0.1, 0.));
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
@@ -159,12 +160,15 @@ int main()
     btTransform groundTransform;
     groundTransform.setIdentity();
     groundTransform.setOrigin(btVector3(0, -1, 0));
+    
     btScalar mass(0.);
     btVector3 localInertia(0, 0, 0);
     btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
     btRigidBody* body = new btRigidBody(rbInfo);
     dynamicsWorld->addRigidBody(body);
+
+    
 
     DebugDrawer debugDrawer;
     dynamicsWorld->setDebugDrawer(&debugDrawer);
@@ -174,22 +178,24 @@ int main()
     GameModel box;
     box.loadFromFile(mdlpath);
     box.bind();
+    box.setColliderFromMesh();
     GameModel kidmodel;
     kidmodel.loadFromFile(mdlpath2);
     kidmodel.bind();
+    kidmodel.setColliderFromMesh();
     GameModel spikemodel;
     spikemodel.loadFromFile(mdlpath3);
     spikemodel.bind();
+    spikemodel.setColliderFromMesh();
 
     auto boxes = std::vector<GameObject*>();
-    auto colliders = std::vector<Collider*>();
-    auto blocks = std::vector<Collider*>();
+
    
 
 
     
     boxes.reserve(20);
-    GameObject* kidspritetest = nullptr;
+    GameObject* kidsprite = nullptr;
 
     
 
@@ -202,26 +208,36 @@ int main()
         {
         case(0):
             object = new GameObject(box);
+            
             break;
         case(1):
             object = new GameObject(spikemodel);
             break;
+        case(2):
+            object = new GameObject(kidmodel);
+            kidsprite = object;
+            break;
         default:
             break;
         }
+
+        if (level[i].second == 2)
+        {
+            object->setCustomCollider(btVector3(object->getTranslate().x, object->getTranslate().y, object->getTranslate().z), btScalar(0.1));
+        }
+        else
+        {
+            object->setBoxColliderFromMesh();
+        }
+        
         object->setTransformMat(level[i].first);
+        object->normalizeSize();
+        object->addColliderToDynamicsWorld(dynamicsWorld);
+        
+
         boxes.push_back(object);
         
     }
-
-    
-
-    /*for (size_t i = 0; i < 20; i++)
-    {
-        boxes.push_back(GameObject(box));
-        boxes[i].scale(glm::dvec3(0.5, 0.5, 0.5));
-        boxes[i].translate(glm::dvec3(1.0 * i, 0.0, 0.0));
-    }*/
 
 
     cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
@@ -257,6 +273,7 @@ int main()
 
 	prevt = (float)glfwGetTime();
     float delaytime;
+    float dt = 0.;
     delaytime = prevt;
 	start = prevt;
     // render loop
@@ -264,14 +281,14 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         currt = (float)glfwGetTime();
+        
         //delaytime = (float)glfwGetTime();
         //std::cout << currt << " " << delaytime << "\n";
         if (currt - delaytime > 0.2f) {
             delaytime = currt;
             
-           // kidspritetest->collider->printbounds();
-            
-            std::cout << "\n";
+            //std::cout << "\n";
+            std::cout << dynamicsWorld->getNumCollisionObjects() << std::endl;
            
         }
 
@@ -299,8 +316,13 @@ int main()
         
         glClear(GL_DEPTH_BUFFER_BIT);
         debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());
-        dynamicsWorld->stepSimulation(delaytime, 10);
+        
+       
+        dynamicsWorld->stepSimulation(dts);
+        dynamicsWorld->applyGravity();
+
         dynamicsWorld->debugDrawWorld();
+        
 
         glfwSwapBuffers(window);
 

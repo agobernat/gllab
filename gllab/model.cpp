@@ -19,7 +19,6 @@ GameModel::GameModel() {
     model_rot = glm::mat4(1.0f);
     model_pos = glm::vec3(-3, 0, -3);
     view_mat = genView(glm::vec3(2, 2, 20), model_pos);
-
     modelData = std::make_unique<tinygltf::Model>();
 }
 GameModel::~GameModel() {
@@ -47,6 +46,8 @@ bool GameModel::loadFromFile(const std::string filename) {
 
     return res;
 }
+
+
 
 void GameModel::bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node) {
     meshData = calculatePrimitiveBufferParams(mesh);
@@ -141,6 +142,8 @@ void GameModel::bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node) {
             int byteStride =
                 accessor.ByteStride(modelData->bufferViews[accessor.bufferView]);
             glBindBuffer(GL_ARRAY_BUFFER, prim.bufData[accessor.bufferView].vbo);
+
+           
 
             int size = 1;
             if (accessor.type != TINYGLTF_TYPE_SCALAR) {
@@ -286,6 +289,21 @@ glm::mat4 GameModel::calculateModelMat(const tinygltf::Node& node, const Transfo
     
 }
 
+void GameModel::setColliderFromMesh()
+{
+    collisionShape = std::make_unique<btBoxShape>(btVector3(btScalar(0.5), btScalar(0.5), btScalar(0.5)));
+}
+
+void GameModel::setCustomCollider(btVector3 dimensions)
+{
+    collisionShape = std::make_unique<btBoxShape>(dimensions);
+}
+
+btCollisionShape* GameModel::getCollisionShape() const
+{
+    return collisionShape.get();
+}
+
 void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform) const{
     for (size_t i = 0; i < mesh.primitives.size(); ++i) {
         const auto& prim = meshData.at(i);
@@ -408,4 +426,35 @@ glm::mat4 GameModel::genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, 
     glm::mat4 mvp = Projection * view_mat * model_mat;
 
     return mvp;
+}
+
+double GameModel::getScalingFactorFromAccessors() const
+{
+    double max = std::numeric_limits<double>::min(), min = std::numeric_limits<double>::max();
+    for (const auto& accessor: modelData->accessors)
+    {
+        for (const auto& maxvalue : accessor.maxValues)
+        {
+            if (maxvalue > max)
+            {
+                max = maxvalue;
+            }
+        }
+
+        for (const auto& minvalue : accessor.minValues)
+        {
+            if (minvalue < min)
+            {
+                min = minvalue;
+            }
+        }
+        
+    }
+
+    if (abs(min) > max)
+    {
+        max = min;
+    }
+
+    return 0.5 / max;
 }

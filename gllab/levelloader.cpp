@@ -45,7 +45,6 @@ std::vector<std::pair<Transform, unsigned int>> LevelLoader::loadFromFile(const 
                 ROTATED_HEXAGONAL_120_FLAG);
 
             Transform transform;
-            transform.scale = glm::scale(transform.scale, glm::dvec3(0.5, 0.5, 0.5));
             transform.translate = glm::translate(transform.translate, glm::dvec3(static_cast<double>(j), -static_cast<double>(i) + 30, 0.0f));
 
             switch (transformflags)

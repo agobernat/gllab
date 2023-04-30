@@ -17,6 +17,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "gameobject.hpp"
+#include "include/bullet/btBulletDynamicsCommon.h"
 
 
 
@@ -33,6 +34,12 @@ public:
 	std::map<int, PrimitiveData> calculatePrimitiveBufferParams(tinygltf::Mesh& mesh);
 
 	glm::mat4 calculateModelMat(const tinygltf::Node& node, const Transform& transform) const;
+
+	void setColliderFromMesh();
+
+	void setCustomCollider(btVector3 dimensions);
+
+	btCollisionShape* getCollisionShape() const;
 
 	void bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node);
 
@@ -54,9 +61,8 @@ public:
 
 	glm::mat4 genMVP(glm::mat4 view_mat, glm::mat4 model_mat, float fov, int w,
 		int h);
-
 	//GLuint vao;
-	
+	double getScalingFactorFromAccessors() const;
 
 
 private:
@@ -65,6 +71,7 @@ private:
 	glm::vec3 model_pos;
 	glm::mat4 view_mat;
 	std::unique_ptr<tinygltf::Model> modelData;
+	std::unique_ptr<btCollisionShape> collisionShape;
 
 	struct SceneData {
 		
@@ -81,6 +88,7 @@ private:
 
 	struct PrimitiveData
 	{
+
 		GLuint texture;
 		const Shader* shader;
 		size_t currentBufferOffset;

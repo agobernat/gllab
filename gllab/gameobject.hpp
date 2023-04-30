@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include "model.hpp"
 #include "collider.h"
+#include "include/bullet/btBulletDynamicsCommon.h"
 
 struct Transform {
 	Transform() {
@@ -19,9 +20,12 @@ class GameObject
 {
 
 private:
-	
+	//btTransform btTr;
 	Transform transform;
 	const GameModel* modelptr;
+	std::unique_ptr<btRigidBody> rigidBody;
+	
+	std::unique_ptr<btDefaultMotionState> motionState;
 
 
 	
@@ -34,14 +38,22 @@ public:
 	Collider* collider;
 	std::string objecttype;
 
+
+	void updateTransformFromPhysics();
+	void setCustomCollider(btVector3 origin, btScalar mass);
+	void setBoxColliderFromMesh();
 	void scale(glm::dvec3 scale);
 	void translate(glm::dvec3 translate);
 	void setTranslate(glm::dvec3 translate);
+	void updateColliderTransform();
+	void addColliderToDynamicsWorld(btDiscreteDynamicsWorld* dynamicsWorld);
+	glm::dvec3 getTranslate();
 	void setTransformMat(Transform transform);
 	glm::dvec3 getTransformVec();
 	void setRotation(double angle, glm::dvec3 rot);
 	void rotate(double angle, glm::dvec3 axis);
 	void draw(const Camera& camera) const;
+	void normalizeSize();
 	//glm::mat4 makeTransform(const Transform& transform, glm::mat4 model = glm::mat4(1.0));
 	//void setSprite(Sprite sprite);
 
