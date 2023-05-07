@@ -165,12 +165,12 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="terraingen.cpp" />
+    <ClCompile Include="transform.cpp" />
     <ClCompile Include="transformations.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.hpp" />
     <ClInclude Include="chunk.hpp" />
-    <ClInclude Include="collider.h" />
     <ClInclude Include="debugdrawer.hpp" />
     <ClInclude Include="gameobject.hpp" />
     <ClInclude Include="globals.hpp" />
@@ -184,6 +184,7 @@
     <ClInclude Include="static.hpp" />
     <ClInclude Include="terrain.hpp" />
     <ClInclude Include="terraingen.hpp" />
+    <ClInclude Include="transform.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="3d1st.vert" />

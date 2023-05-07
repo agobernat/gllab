@@ -18,10 +18,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "gameobject.hpp"
 #include "include/bullet/btBulletDynamicsCommon.h"
+#include "transform.hpp"
 
 
 
-struct Transform;
+
 class GameModel
 {
 private: struct PrimitiveData;

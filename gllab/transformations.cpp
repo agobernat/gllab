@@ -38,7 +38,7 @@
 #include "levelloader.hpp"
 #include "static.hpp"
 #include "globals.hpp"
-#include "collider.h"
+
 #include "debugdrawer.hpp"
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
@@ -63,6 +63,8 @@ float prevt;
 float start;
 
 float currt;
+
+GameObject* kidsprite;
 
 int main()
 {
@@ -152,7 +154,7 @@ int main()
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
     btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0., -0.1, 0.));
+    dynamicsWorld->setGravity(btVector3(0., -1.0, 0.));
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
@@ -195,7 +197,7 @@ int main()
 
     
     boxes.reserve(20);
-    GameObject* kidsprite = nullptr;
+    kidsprite = nullptr;
 
     
 
@@ -220,17 +222,17 @@ int main()
         default:
             break;
         }
-
+        object->setTransform(level[i].first);
         if (level[i].second == 2)
         {
-            object->setCustomCollider(btVector3(object->getTranslate().x, object->getTranslate().y, object->getTranslate().z), btScalar(0.1));
+            
+            object->setCustomCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()), btScalar(0.1));
         }
         else
         {
             object->setBoxColliderFromMesh();
         }
         
-        object->setTransformMat(level[i].first);
         object->normalizeSize();
         object->addColliderToDynamicsWorld(dynamicsWorld);
         
@@ -240,7 +242,7 @@ int main()
     }
 
 
-    cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
+    cam = Camera(glm::vec3(12.0f, 20.0f, 32.0f),
                  glm::vec3(0.0f, 0.0f, - 1.0f),
                  glm::vec3(0.0f, 1.0f, 0.0f));
 
@@ -288,7 +290,7 @@ int main()
             delaytime = currt;
             
             //std::cout << "\n";
-            std::cout << dynamicsWorld->getNumCollisionObjects() << std::endl;
+            //std::cout << dynamicsWorld->getNumCollisionObjects() << std::endl;
            
         }
 
@@ -305,11 +307,6 @@ int main()
             obj->draw(cam);
         }
         
-
-        
-
-        
-
         //kid.draw(cam);
 
         //terrain.draw(currt, cam);
@@ -318,8 +315,15 @@ int main()
         debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());
         
        
-        dynamicsWorld->stepSimulation(dts);
+        dynamicsWorld->stepSimulation(dts, 3, 1.0 / 50);
         dynamicsWorld->applyGravity();
+        
+        for (const auto& box : boxes) {
+            if (!box->isKinematic())
+            {
+                box->updateGraphicsTransformFromPhysics();
+            }
+        }
 
         dynamicsWorld->debugDrawWorld();
         
@@ -349,23 +353,33 @@ void processInput(GLFWwindow *window)
 
 	if (keys[GLFW_KEY_ESCAPE])
 		glfwSetWindowShouldClose(window, true);
+
 	if (keys[GLFW_KEY_LEFT])
 	{
-		
+        auto vel = kidsprite->getVelocity();
+        vel.x = -3.0;
+        kidsprite->setVelocity(vel);
 	}
 	else if (keys[GLFW_KEY_RIGHT])
 	{
+        auto vel = kidsprite->getVelocity();
+        vel.x = 3.0;
+        kidsprite->setVelocity(vel);
 	}
-    if (!keys[GLFW_KEY_LEFT])
+    else
     {
+        auto vel = kidsprite->getVelocity();
+        vel.x = 0.0;
+        kidsprite->setVelocity(vel);
     }
-    if (!keys[GLFW_KEY_RIGHT])
-    {
-    }
+
 
     if (keys[GLFW_KEY_C])
     {
-
+        auto vel = kidsprite->getVelocity();
+        vel.y = 2.0;
+        kidsprite->setVelocity(vel);
+        
     }
     else if (!keys[GLFW_KEY_C])
     {

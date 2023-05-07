@@ -75,6 +75,9 @@
     <ClCompile Include="debugdrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="transform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameobject.hpp">
@@ -119,10 +122,10 @@
     <ClInclude Include="levelloader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="collider.h">
+    <ClInclude Include="debugdrawer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="debugdrawer.hpp">
+    <ClInclude Include="transform.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

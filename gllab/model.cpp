@@ -280,10 +280,10 @@ glm::mat4 GameModel::calculateModelMat(const tinygltf::Node& node, const Transfo
         
 
     }
-
-    modelmat *= glm::mat4(transform.translate);
-    modelmat *= glm::mat4(transform.rotation);
-    modelmat *= glm::mat4(transform.scale);
+    
+    modelmat *= glm::mat4(transform.getTranslateMat());
+    modelmat *= glm::mat4(transform.getRotationMat());
+    modelmat *= glm::mat4(transform.getScaleMat());
 
     return modelmat;
     
@@ -297,6 +297,7 @@ void GameModel::setColliderFromMesh()
 void GameModel::setCustomCollider(btVector3 dimensions)
 {
     collisionShape = std::make_unique<btBoxShape>(dimensions);
+    //std::make_unique<btCapsuleShape>();
 }
 
 btCollisionShape* GameModel::getCollisionShape() const
@@ -317,9 +318,9 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinyg
         prim.shader->setMat4("projection", camera.projection());
         prim.shader->setMat4("view", camera.view());
         prim.shader->setMat4("model", calculateModelMat(node, transform));
-        
+        const auto& scale = transform.getScale();
 
-        if (transform.scale[0][0] * transform.scale[1][1] * transform.scale[2][2] < 0)
+        if (scale.x * scale.y * scale.z < 0)
         {
             glFrontFace(GL_CW);
         }

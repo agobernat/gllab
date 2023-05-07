@@ -13,7 +13,15 @@ GameObject::GameObject(const GameModel& model) {
 }
 
 
+Transform& GameObject::getTransform()
+{
+	return transform;
+}
 
+void GameObject::setTransform(Transform transform)
+{
+	this->transform = transform;
+}
 
 void GameObject::updateTransformFromPhysics()
 {
@@ -26,17 +34,19 @@ void GameObject::setCustomCollider(btVector3 origin, btScalar mass)
 	
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	const auto& translation = getTranslate();
+	auto translation = transform.getTranslate();
 	groundTransform.setOrigin(origin);
 	std::cout << translation.x << " " << translation.y << " " << translation.z << std::endl;
 
-	
 	btVector3 localInertia(0, 0, 0);
 	motionState = std::make_unique<btDefaultMotionState>(groundTransform);
 
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), modelptr->getCollisionShape(), localInertia);
 	rigidBody = std::make_unique<btRigidBody>(rbInfo);
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
+	rigidBody->setFriction(0.0);
+	
+	
 	
 }
 
@@ -46,7 +56,7 @@ void GameObject::setBoxColliderFromMesh()
 	
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	const auto& translation = getTranslate();
+	auto translation = transform.getTranslate();
 	groundTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
 	std::cout << translation.x <<  " "  << translation.y << " " << translation.z << std::endl;
 
@@ -60,32 +70,51 @@ void GameObject::setBoxColliderFromMesh()
 	
 }
 
-void GameObject::scale(glm::dvec3 scale)
+bool GameObject::isKinematic()
 {
-	transform.scale = glm::scale(transform.scale, scale);
-}
-void GameObject::translate(glm::dvec3 translate)
-{
-	transform.translate = glm::translate(transform.translate, translate);
-	updateColliderTransform();
-	
+	if (rigidBody->getMass() == 0.0)
+	{
+		return true;
+	}
+	return false;
 }
 
-void GameObject::setTranslate(glm::dvec3 translate) {
-	transform.translate = glm::translate(glm::dmat4(1.0), translate);
-	updateColliderTransform();
-	
+void GameObject::setVelocity(glm::vec3 velocity)
+{
+	rigidBody->setLinearVelocity(Transform::glmTobtVec3(velocity));
 }
 
-void GameObject::updateColliderTransform()
+glm::vec3 GameObject::getVelocity()
+{
+	return glm::vec3(Transform::btToglmVec3(rigidBody->getLinearVelocity()));
+}
+
+void GameObject::addVelocity(glm::vec3 velocity)
+{
+	auto vel = getVelocity();
+	vel += velocity;
+	setVelocity(vel);
+}
+
+
+
+
+void GameObject::updatePhysicsTransformFromGraphics()
 {
 	btTransform groundTransform;
 	groundTransform.setIdentity();
-	const auto& translation = getTranslate();
+	auto translation = transform.getTranslate();
 	groundTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
-
+	
 	rigidBody->setWorldTransform(groundTransform);
 	rigidBody->updateInertiaTensor();
+}
+
+void GameObject::updateGraphicsTransformFromPhysics()
+{
+	const auto& physicstransform = rigidBody->getWorldTransform();
+	transform.setTranslate(Transform::btToglmVec3(physicstransform.getOrigin()));
+	//transform.setRotation(Transf)
 }
 
 void GameObject::addColliderToDynamicsWorld(btDiscreteDynamicsWorld* dynamicsWorld)
@@ -93,34 +122,6 @@ void GameObject::addColliderToDynamicsWorld(btDiscreteDynamicsWorld* dynamicsWor
 	dynamicsWorld->addRigidBody(rigidBody.get());
 }
 
-glm::dvec3 GameObject::getTranslate()
-{
-	return glm::dvec3(transform.translate[3][0], transform.translate[3][1], transform.translate[3][2]);
-	
-}
-
-void GameObject::setTransformMat(Transform transform)
-{
-	this->transform = transform;
-	updateColliderTransform();
-	
-}
-
-glm::dvec3 GameObject::getTransformVec() {
-	return glm::dvec3(transform.translate[3][0], transform.translate[3][1], transform.translate[3][2]);
-}
-
-void GameObject::setRotation(double angle, glm::dvec3 rot) {
-	transform.rotation = glm::rotate(glm::dmat4(1.0), angle, rot);
-}
-
-void GameObject::rotate(double angle, glm::dvec3 axis) {
-	transform.rotation = glm::rotate(transform.rotation, angle, axis);
-}
-
-/*void GameObject::setSprite(Sprite sprite) {
-	this->sprite = sprite;
-}*/
 
 void GameObject::draw(const Camera& camera) const
 {
@@ -130,6 +131,7 @@ void GameObject::draw(const Camera& camera) const
 void GameObject::normalizeSize()
 {
 	auto scalingfactor = modelptr->getScalingFactorFromAccessors();
-	transform.scale = glm::scale(transform.scale, glm::dvec3(scalingfactor, scalingfactor, scalingfactor));
+	transform.scale(glm::dvec3(scalingfactor, scalingfactor, scalingfactor));
+	
 }
 
