@@ -29,22 +29,23 @@ void GameObject::updateTransformFromPhysics()
 	
 }
 
-void GameObject::setCustomCollider(btVector3 origin, btScalar mass)
+void GameObject::setCustomCollider(btVector3 origin, btScalar mass, btScalar friction)
 {
 	
 	btTransform groundTransform;
 	groundTransform.setIdentity();
 	auto translation = transform.getTranslate();
 	groundTransform.setOrigin(origin);
-	std::cout << translation.x << " " << translation.y << " " << translation.z << std::endl;
 
 	btVector3 localInertia(0, 0, 0);
 	motionState = std::make_unique<btDefaultMotionState>(groundTransform);
 
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), modelptr->getCollisionShape(), localInertia);
+	
 	rigidBody = std::make_unique<btRigidBody>(rbInfo);
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
-	rigidBody->setFriction(0.0);
+	rigidBody->setFriction(friction);
+	
 	
 	
 	
@@ -58,7 +59,6 @@ void GameObject::setBoxColliderFromMesh()
 	groundTransform.setIdentity();
 	auto translation = transform.getTranslate();
 	groundTransform.setOrigin(btVector3(translation.x, translation.y, translation.z));
-	std::cout << translation.x <<  " "  << translation.y << " " << translation.z << std::endl;
 
 	btScalar mass(0.);
 	btVector3 localInertia(0, 0, 0);

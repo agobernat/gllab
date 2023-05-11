@@ -9,6 +9,7 @@ Camera::Camera(glm::vec3 pos, glm::vec3 front, glm::vec3 up) : pos(pos), front(f
     fov = 80.0f;
     lastX = Static::SCR_WIDTH / 2.0;
     lastY = Static::SCR_HEIGHT / 2.0;
+    moveRemainingDuration = 0.;
 
     const int unit_size = 1;
     float n = 25.0f * unit_size;
@@ -37,6 +38,37 @@ const glm::mat4 Camera::view() const {
 const glm::mat4 Camera::projection() const
 {
     return proj;
+}
+
+Camera Camera::getDefault()
+{
+    return Camera(glm::vec3(12.0f, 20.0f, 32.0f),
+        glm::vec3(0.0f, 0.0f, -1.0f),
+        glm::vec3(0.0f, 1.0f, 0.0f));
+}
+
+void Camera::linearMove(glm::vec3 pos, glm::vec3 front, double duration)
+{
+    posGoal = pos;
+    frontGoal = front;
+    moveRemainingDuration = duration;
+}
+
+void Camera::tick(double dt)
+{
+    if (moveRemainingDuration <= 0)
+    {
+        return;
+    }
+    double ratio;
+    if (dt > moveRemainingDuration)
+    {
+        ratio = 1.;
+    }
+    ratio = dt / moveRemainingDuration;
+    this->pos = pos + (posGoal - pos) * static_cast<float>(ratio);
+    this->front = front + (frontGoal - front) * static_cast<float>(ratio);
+    moveRemainingDuration -= dt;
 }
 
 void Camera::move(float x, float y) {

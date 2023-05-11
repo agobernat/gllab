@@ -33,7 +33,7 @@ public:
 	void setTransform(Transform transform);
 
 	void updateTransformFromPhysics();
-	void setCustomCollider(btVector3 origin, btScalar mass);
+	void setCustomCollider(btVector3 origin, btScalar mass, btScalar friction);
 	void setBoxColliderFromMesh();
 
 	bool isKinematic();

@@ -297,7 +297,9 @@ void GameModel::setColliderFromMesh()
 void GameModel::setCustomCollider(btVector3 dimensions)
 {
     collisionShape = std::make_unique<btBoxShape>(dimensions);
-    //std::make_unique<btCapsuleShape>();
+    //collisionShape->setMargin(0.2);
+    
+   
 }
 
 btCollisionShape* GameModel::getCollisionShape() const

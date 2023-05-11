@@ -58,16 +58,26 @@ Camera cam;
 
 bool keys[1024];
 
-float dts;
-float prevt;
-float start;
+double dts;
+double prevt;
+double start;
 
-float currt;
+double currt;
+bool flipped;
+bool debugdraw;
+bool xpressed;
+bool zpressed;
 
 GameObject* kidsprite;
 
 int main()
 {
+
+    debugdraw = false;
+    flipped = false;
+
+    xpressed = false;
+    zpressed = false;
    
     // glfw: initialize and configure
     // ------------------------------
@@ -140,6 +150,7 @@ int main()
     //std::string mdlpath("resources\\models\\Cube.gltf");
     //std::string mdlpath("resources\\models\\tent.gltf");
     //std::string mdlpath("resources\\models\\platform.gltf");
+    std::string mdlpath4("resources\\models\\pushblock.gltf");
     std::string mdlpath3("resources\\models\\needle.gltf");
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
@@ -154,7 +165,7 @@ int main()
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
     btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0., -1.0, 0.));
+    dynamicsWorld->setGravity(btVector3(0., -5.0, 0.));
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
@@ -184,11 +195,16 @@ int main()
     GameModel kidmodel;
     kidmodel.loadFromFile(mdlpath2);
     kidmodel.bind();
-    kidmodel.setColliderFromMesh();
+    kidmodel.setCustomCollider(btVector3(0.5, 0.3, 0.5));
     GameModel spikemodel;
     spikemodel.loadFromFile(mdlpath3);
     spikemodel.bind();
     spikemodel.setColliderFromMesh();
+
+    GameModel pushblockmodel;
+    pushblockmodel.loadFromFile(mdlpath4);
+    pushblockmodel.bind();
+    pushblockmodel.setColliderFromMesh();
 
     auto boxes = std::vector<GameObject*>();
 
@@ -219,6 +235,9 @@ int main()
             object = new GameObject(kidmodel);
             kidsprite = object;
             break;
+        case(4):
+            object = new GameObject(pushblockmodel);
+            break;
         default:
             break;
         }
@@ -226,7 +245,11 @@ int main()
         if (level[i].second == 2)
         {
             
-            object->setCustomCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()), btScalar(0.1));
+            object->setCustomCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()), btScalar(0.1), btScalar(0.0));
+        }
+        else if (level[i].second == 4)
+        {
+            object->setCustomCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()), btScalar(0.1), btScalar(2.0));
         }
         else
         {
@@ -242,9 +265,7 @@ int main()
     }
 
 
-    cam = Camera(glm::vec3(12.0f, 20.0f, 32.0f),
-                 glm::vec3(0.0f, 0.0f, - 1.0f),
-                 glm::vec3(0.0f, 1.0f, 0.0f));
+    cam = Camera::getDefault();
 
     int hmapsize = 16;
     Terrain terrain(shaderManager.getShader("terrain"), hmapsize, 16, texture8, 6969);
@@ -306,7 +327,7 @@ int main()
         for (const auto& obj : boxes) {
             obj->draw(cam);
         }
-        
+        cam.tick(dts);
         //kid.draw(cam);
 
         //terrain.draw(currt, cam);
@@ -315,7 +336,7 @@ int main()
         debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());
         
        
-        dynamicsWorld->stepSimulation(dts, 3, 1.0 / 50);
+        dynamicsWorld->stepSimulation(dts, 1, 1.0 / 50);
         dynamicsWorld->applyGravity();
         
         for (const auto& box : boxes) {
@@ -324,8 +345,11 @@ int main()
                 box->updateGraphicsTransformFromPhysics();
             }
         }
-
-        dynamicsWorld->debugDrawWorld();
+        if (debugdraw)
+        {
+            dynamicsWorld->debugDrawWorld();
+        }
+        
         
 
         glfwSwapBuffers(window);
@@ -357,13 +381,13 @@ void processInput(GLFWwindow *window)
 	if (keys[GLFW_KEY_LEFT])
 	{
         auto vel = kidsprite->getVelocity();
-        vel.x = -3.0;
+        vel.x = -4.5;
         kidsprite->setVelocity(vel);
 	}
 	else if (keys[GLFW_KEY_RIGHT])
 	{
         auto vel = kidsprite->getVelocity();
-        vel.x = 3.0;
+        vel.x = 4.5;
         kidsprite->setVelocity(vel);
 	}
     else
@@ -377,7 +401,7 @@ void processInput(GLFWwindow *window)
     if (keys[GLFW_KEY_C])
     {
         auto vel = kidsprite->getVelocity();
-        vel.y = 2.0;
+        vel.y = 4.0;
         kidsprite->setVelocity(vel);
         
     }
@@ -386,11 +410,44 @@ void processInput(GLFWwindow *window)
 
     }
 
+    if (keys[GLFW_KEY_X])
+    {
+        if (!xpressed)
+        {
+            debugdraw = !debugdraw;
+        }
+        xpressed = true;
+    }
+    else 
+    {
+        xpressed = false;
+    }
+
+    if (keys[GLFW_KEY_Z])
+    {
+        if (!zpressed)
+        {
+            if (flipped)
+            {
+                cam.linearMove(glm::vec3(12.0f, 20.0f, 32.0f), glm::vec3(0.0f, 0.0f, -1.0f), 1.);
+            }
+            else
+            {
+                cam.linearMove(glm::vec3(12.0f, 8.0f, 15.0f), glm::vec3(0.0f, 0.7f, -1.0f), 1.);
+            }
+            flipped = !flipped;
+        }
+        zpressed = true;
+        
+    }
+    else
+    {
+        zpressed = false;
+    }
+
     if (keys[GLFW_KEY_R])
     {
-        cam = Camera(glm::vec3(0.0f, 4.0f, 12.0f),
-            glm::vec3(0.0f, 0.0f, -1.0f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
+        cam = Camera::getDefault();
     }
 
     float cameraSpeed;
@@ -413,8 +470,6 @@ void processInput(GLFWwindow *window)
         cam.pos += cameraSpeed * cam.up;
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cam.pos -= cameraSpeed * cam.up;
-    if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
-        std::cout << cam.front.x << ", " << cam.front.y << ", " << cam.front.z << std::endl;
     
 	countfps();
 
