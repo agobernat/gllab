@@ -14,7 +14,7 @@ class GameObject
 private:
 	
 	Transform transform;
-	const GameModel* modelptr;
+	GameModel* modelptr;
 	std::unique_ptr<btRigidBody> rigidBody;
 	std::unique_ptr<btDefaultMotionState> motionState;
 
@@ -24,7 +24,7 @@ private:
 public:
 
 	GameObject();
-	GameObject(const GameModel& model);
+	GameObject(GameModel& model);
 
 	
 	std::string objecttype;

@@ -69,6 +69,7 @@ bool xpressed;
 bool zpressed;
 
 GameObject* kidsprite;
+btDiscreteDynamicsWorld* dynamicsWorld;
 
 int main()
 {
@@ -154,6 +155,7 @@ int main()
     std::string mdlpath3("resources\\models\\needle.gltf");
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
+    std::string defaultblockpath("resources\\models\\defaultblock.gltf");
     LevelLoader loader;
     auto level = loader.loadFromFile("newmap.csv");
 
@@ -163,23 +165,23 @@ int main()
     btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
     btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
-    btDiscreteDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
+    dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
-    dynamicsWorld->setGravity(btVector3(0., -5.0, 0.));
+    dynamicsWorld->setGravity(btVector3(0., -10.0, 0.));
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
-    btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
-    btTransform groundTransform;
-    groundTransform.setIdentity();
-    groundTransform.setOrigin(btVector3(0, -1, 0));
-    
-    btScalar mass(0.);
-    btVector3 localInertia(0, 0, 0);
-    btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
-    btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
-    btRigidBody* body = new btRigidBody(rbInfo);
-    dynamicsWorld->addRigidBody(body);
+    //btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(1.), btScalar(1.), btScalar(1.)));
+    //btTransform groundTransform;
+    //groundTransform.setIdentity();
+    //groundTransform.setOrigin(btVector3(0, -1, 0));
+    //
+    //btScalar mass(0.);
+    //btVector3 localInertia(0, 0, 0);
+    //btDefaultMotionState* myMotionState = new btDefaultMotionState(groundTransform);
+    //btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, groundShape, localInertia);
+    //btRigidBody* body = new btRigidBody(rbInfo);
+    //dynamicsWorld->addRigidBody(body);
 
     
 
@@ -201,16 +203,28 @@ int main()
     spikemodel.bind();
     spikemodel.setColliderFromMesh();
 
+    GameModel defaultblockmodel;
+    defaultblockmodel.loadFromFile(defaultblockpath);
+    defaultblockmodel.bind();
+    defaultblockmodel.setCustomCollider(btVector3(12.5, 9.5, 0.5));
+    
+
     GameModel pushblockmodel;
     pushblockmodel.loadFromFile(mdlpath4);
     pushblockmodel.bind();
     pushblockmodel.setColliderFromMesh();
+    
 
     auto boxes = std::vector<GameObject*>();
 
-   
-
-
+    GameObject* background = new GameObject(defaultblockmodel);
+    boxes.push_back(background);
+    
+    background->normalizeSize();
+    background->getTransform().scale(glm::vec3(25., 19., 1.));
+    background->getTransform().translate(glm::vec3(12., 21., -1.0));
+    background->setCustomCollider(Transform::glmTobtVec3(background->getTransform().getTranslate()), btScalar(0.0), btScalar(0.0));
+    background->addColliderToDynamicsWorld(dynamicsWorld);
     
     boxes.reserve(20);
     kidsprite = nullptr;
@@ -396,13 +410,48 @@ void processInput(GLFWwindow *window)
         vel.x = 0.0;
         kidsprite->setVelocity(vel);
     }
+    
+    if (keys[GLFW_KEY_UP])
+    {
+        if (flipped)
+        {
+            auto vel = kidsprite->getVelocity();
+            vel.y = 4.5;
+            kidsprite->setVelocity(vel);
+        }
+        
+    }
+    else if (keys[GLFW_KEY_DOWN])
+    {
+        if (flipped)
+        {
+            auto vel = kidsprite->getVelocity();
+            vel.y = -4.5;
+            kidsprite->setVelocity(vel);
+        }
+
+    }
+    else
+    {
+        if (flipped)
+        {
+            auto vel = kidsprite->getVelocity();
+            vel.y = 0.0;
+            kidsprite->setVelocity(vel);
+        }
+
+    }
 
 
     if (keys[GLFW_KEY_C])
     {
-        auto vel = kidsprite->getVelocity();
-        vel.y = 4.0;
-        kidsprite->setVelocity(vel);
+        if (!flipped)
+        {
+            auto vel = kidsprite->getVelocity();
+            vel.y = 8.0;
+            kidsprite->setVelocity(vel);
+        }
+       
         
     }
     else if (!keys[GLFW_KEY_C])
@@ -430,10 +479,13 @@ void processInput(GLFWwindow *window)
             if (flipped)
             {
                 cam.linearMove(glm::vec3(12.0f, 20.0f, 32.0f), glm::vec3(0.0f, 0.0f, -1.0f), 1.);
+                dynamicsWorld->setGravity(btVector3(0., -10., 0.));
+                
             }
             else
             {
                 cam.linearMove(glm::vec3(12.0f, 8.0f, 15.0f), glm::vec3(0.0f, 0.7f, -1.0f), 1.);
+                dynamicsWorld->setGravity(btVector3(0., 0., -10.));
             }
             flipped = !flipped;
         }

@@ -7,7 +7,7 @@ GameObject::GameObject()
 	
 }
 
-GameObject::GameObject(const GameModel& model) {
+GameObject::GameObject(GameModel& model) {
 	modelptr = &model;
 	
 }
@@ -40,11 +40,12 @@ void GameObject::setCustomCollider(btVector3 origin, btScalar mass, btScalar fri
 	btVector3 localInertia(0, 0, 0);
 	motionState = std::make_unique<btDefaultMotionState>(groundTransform);
 
-	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), modelptr->getCollisionShape(), localInertia);
 	
+	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), modelptr->getCollisionShape(), localInertia);
 	rigidBody = std::make_unique<btRigidBody>(rbInfo);
 	rigidBody->setActivationState(DISABLE_DEACTIVATION);
 	rigidBody->setFriction(friction);
+	
 	
 	
 	
@@ -66,6 +67,7 @@ void GameObject::setBoxColliderFromMesh()
 
 	btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, motionState.get(), modelptr->getCollisionShape(), localInertia);
 	rigidBody = std::make_unique<btRigidBody>(rbInfo);
+	rigidBody->setContactStiffnessAndDamping(10000, 10000);
 	
 	
 }

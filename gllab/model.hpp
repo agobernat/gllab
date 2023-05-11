@@ -20,9 +20,6 @@
 #include "include/bullet/btBulletDynamicsCommon.h"
 #include "transform.hpp"
 
-
-
-
 class GameModel
 {
 private: struct PrimitiveData;
@@ -40,7 +37,7 @@ public:
 
 	void setCustomCollider(btVector3 dimensions);
 
-	btCollisionShape* getCollisionShape() const;
+	btCollisionShape* getCollisionShape();
 
 	void bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node);
 
