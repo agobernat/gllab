@@ -23,6 +23,7 @@
 #undef STBI_MSC_SECURE_CRT
 
 #include "bullet/btBulletDynamicsCommon.h"
+#include "bullet/BulletDynamics/ConstraintSolver/btNNCGConstraintSolver.h"
 
 
 #include "model.hpp"
@@ -164,9 +165,15 @@ int main()
         btDefaultCollisionConfiguration();
     btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
     btBroadphaseInterface* overlappingPairCache = new btDbvtBroadphase();
+    
+    
+   
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
+    //btSequentialImpulseConstraintSolver* solver = new btNNCGConstraintSolver;
+    
     dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher,
         overlappingPairCache, solver, collisionConfiguration);
+
     dynamicsWorld->setGravity(btVector3(0., -10.0, 0.));
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
@@ -217,14 +224,14 @@ int main()
 
     auto boxes = std::vector<GameObject*>();
 
-    GameObject* background = new GameObject(defaultblockmodel);
-    boxes.push_back(background);
-    
-    background->normalizeSize();
-    background->getTransform().scale(glm::vec3(25., 19., 1.));
-    background->getTransform().translate(glm::vec3(12., 21., -1.0));
-    background->setCustomCollider(Transform::glmTobtVec3(background->getTransform().getTranslate()), btScalar(0.0), btScalar(0.0));
-    background->addColliderToDynamicsWorld(dynamicsWorld);
+    //GameObject* background = new GameObject(defaultblockmodel);
+    //boxes.push_back(background);
+    //
+    //background->normalizeSize();
+    //background->getTransform().scale(glm::vec3(25., 19., 1.));
+    //background->getTransform().translate(glm::vec3(12., 21., -1.0));
+    //background->setCustomCollider(Transform::glmTobtVec3(background->getTransform().getTranslate()), btScalar(0.0), btScalar(0.0));
+    //background->addColliderToDynamicsWorld(dynamicsWorld);
     
     boxes.reserve(20);
     kidsprite = nullptr;
@@ -287,25 +294,23 @@ int main()
 
     
 
-    terrain.loadChunk(0, 0);
+    //terrain.loadChunk(0, 0);
     terrain.loadChunk(-1, 0);
-    terrain.loadChunk(0, -1);
+    //terrain.loadChunk(0, -1);
     terrain.loadChunk(-1, -1);
-    terrain.loadChunk(1, 0);
-    terrain.loadChunk(-2, 0);
+    //terrain.loadChunk(1, 0);
+    //terrain.loadChunk(-2, 0);
     //terrain.unloadChunk(0, 0);
 
     std::vector<std::pair<int, int>> loaded;
     //loaded.push_back(std::pair(0, 0));
     loaded.push_back(std::pair(-1, 0));
-    loaded.push_back(std::pair(0, -1));
-    loaded.push_back(std::pair(-1, -1));
+    //loaded.push_back(std::pair(0, -1));
+    //loaded.push_back(std::pair(-1, -1));
     loaded.push_back(std::pair(1, 0));
-    loaded.push_back(std::pair(-2, 0));
-    
+    //loaded.push_back(std::pair(-2, 0));
+    terrain.setPos(glm::dvec3( 0., -20., -3.));
 
-
-    
 
 
 	prevt = (float)glfwGetTime();
@@ -344,7 +349,8 @@ int main()
         cam.tick(dts);
         //kid.draw(cam);
 
-        //terrain.draw(currt, cam);
+        terrain.draw(currt, cam);
+        terrain.move(glm::vec3(10 * dts, 0., 0.));
         
         glClear(GL_DEPTH_BUFFER_BIT);
         debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());

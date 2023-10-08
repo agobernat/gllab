@@ -44,10 +44,12 @@ void Chunk::init() {
 
 
 
-void Chunk::draw(double time, const Camera& camera, const Shader& shader, GLuint texture) {
+void Chunk::draw(double time, const Camera& camera, glm::dvec3 pos, const Shader& shader, GLuint texture) {
 
     shader.use();
-    glm::mat4 model = glm::mat4(1.0f);
+    glm::vec3 posf = static_cast<glm::vec3>(pos);
+    //model = glm::mat4(1.0f);
+    glm::mat4 model = glm::translate(glm::mat4(1.0), posf);
     glm::mat4 projection = glm::mat4(1.0f);
    
    

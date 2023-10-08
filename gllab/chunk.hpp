@@ -15,7 +15,7 @@ public:
 	Chunk(Terrain& terrain, unsigned int size, unsigned int res, int Xcoord, int Ycoord);
 	~Chunk();
     void init();
-    void draw(double time, const Camera& camera, const Shader& shader, GLuint texture);
+    void draw(double time, const Camera& camera, glm::dvec3 pos, const Shader& shader, GLuint texture);
     void loadHmapAsTexture(float* hmap, int hmapsize);
 
 

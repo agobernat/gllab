@@ -16,6 +16,9 @@ public:
     Terrain(const Shader& shader, unsigned int size, unsigned int res, GLuint texture, long long int seed);
     Terrain(const Shader& shader, unsigned int size, unsigned int res, GLuint texture);
     ~Terrain();
+
+    void setPos(glm::dvec3 pos);
+    void move(glm::dvec3 vec);
     void init();
     void draw(double time, Camera camera);
     
@@ -29,7 +32,7 @@ public:
 private:
     
     GLuint texture;
-    
+    glm::vec3 pos;
 
     std::list<Chunk*> chunklist;
     std::list<void*> drawlist;

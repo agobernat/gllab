@@ -23,6 +23,16 @@ Terrain::~Terrain()
     delete[] vertexarray;
 }
 
+void Terrain::setPos(glm::dvec3 pos)
+{
+    this->pos = pos;
+}
+
+void Terrain::move(glm::dvec3 vec)
+{
+    this->pos += vec;
+}
+
 void Terrain::loadChunk(int x, int y) {
     Chunk* chunk = new Chunk(*this, size, res, x, y);
     chunklist.push_back(chunk);
@@ -46,7 +56,7 @@ void Terrain::draw(double time, Camera camera) {
 
     for (Chunk* chunk : chunklist)
     {
-        chunk->draw(time, camera, shader, texture);
+        chunk->draw(time, camera, pos, shader, texture);
     }
 }
 
