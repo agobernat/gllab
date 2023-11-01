@@ -8,6 +8,7 @@
 
 #include "static.hpp"
 #include "globals.hpp"
+#include "resourcemanager.hpp"
 
 
 
@@ -104,6 +105,11 @@ void GameModel::bindMesh(tinygltf::Mesh& mesh, const tinygltf::Node& node) {
             
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.width, image.height, 0, format, image.pixel_type, &image.image.at(0));
             glGenerateMipmap(GL_TEXTURE_2D);
+        }
+        else
+        {
+            const auto& clr = modelData->materials[primitive.material].pbrMetallicRoughness.baseColorFactor;
+            prim.texture = ResourceManager::MakeTextureFromColor({clr[0], clr[1], clr[2], clr[3] });
         }
 
 
@@ -299,16 +305,21 @@ void GameModel::setCustomCollider(btVector3 dimensions)
     collisionShape = std::make_unique<btBoxShape>(dimensions);
     
     //collisionShape->setMargin(0.2);
-    
    
 }
+
+void GameModel::setCustomCollider(std::unique_ptr<btCollisionShape> shape)
+{
+    collisionShape = std::move(shape);
+}
+
 
 btCollisionShape* GameModel::getCollisionShape()
 {
     return collisionShape.get();
 }
 
-void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform) const{
+void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform, glm::vec4 triggercolor) const{
     for (size_t i = 0; i < mesh.primitives.size(); ++i) {
         const auto& prim = meshData.at(i);
         const tinygltf::Primitive& primitive = mesh.primitives[i];
@@ -321,6 +332,8 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinyg
         prim.shader->setMat4("projection", camera.projection());
         prim.shader->setMat4("view", camera.view());
         prim.shader->setMat4("model", calculateModelMat(node, transform));
+        
+        prim.shader->setVec4("coloruniform", triggercolor);
         const auto& scale = transform.getScale();
 
         if (scale.x * scale.y * scale.z < 0)
@@ -337,11 +350,11 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinyg
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, prim.bufData.at(indexAccessor.bufferView).vbo);
 
-        if (modelData->textures.size() > 0)
-        {
+        //if (modelData->textures.size() > 0)
+        //{
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, prim.texture);
-        }
+        //}
 
         glDrawElements(primitive.mode, indexAccessor.count,
             indexAccessor.componentType,
@@ -352,24 +365,24 @@ void GameModel::drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinyg
 }
 
 // recursively draw node and children nodes of model
-void GameModel::drawModelNodes(tinygltf::Node& node, const Camera& camera, const Transform& transform) const {
+void GameModel::drawModelNodes(tinygltf::Node& node, const Camera& camera, const Transform& transform, glm::vec4 triggercolor) const {
     if ((node.mesh >= 0) && (node.mesh < modelData->meshes.size())) {
-        drawMesh(modelData->meshes[node.mesh], camera, node, transform);
+        drawMesh(modelData->meshes[node.mesh], camera, node, transform, triggercolor);
     }
     for (size_t i = 0; i < node.children.size(); i++) {
-        drawModelNodes(modelData->nodes[node.children[i]], camera, transform);
+        drawModelNodes(modelData->nodes[node.children[i]], camera, transform,triggercolor);
     }
 }
 
-void GameModel::draw(const Camera& camera) const {
-    draw(camera, Transform());
+void GameModel::draw(const Camera& camera, glm::vec4 triggercolor) const {
+    draw(camera, Transform(), triggercolor);
 }
 
-void GameModel::draw(const Camera& camera, const Transform& transform) const {
+void GameModel::draw(const Camera& camera, const Transform& transform, glm::vec4 triggercolor) const {
 
     const tinygltf::Scene& scene = modelData->scenes[modelData->defaultScene];
     for (size_t i = 0; i < scene.nodes.size(); ++i) {
-        drawModelNodes(modelData->nodes[scene.nodes[i]], camera, transform);
+        drawModelNodes(modelData->nodes[scene.nodes[i]], camera, transform, triggercolor);
     }
 
 }

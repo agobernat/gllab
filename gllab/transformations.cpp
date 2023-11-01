@@ -52,9 +52,53 @@ void mouse_callback_init(GLFWwindow* window, double xposIn, double yposIn);
 
 Camera cam;
 // settings
+bool triggered = false;
 
+struct rCallBack : public btCollisionWorld::ContactResultCallback
+{
+    inline virtual btScalar addSingleResult(btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap,
+        int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1)
+    {
+        
+        auto obj0 = static_cast<btCollisionObject*>(colObj0Wrap->getCollisionObject()->getUserPointer());
+        auto obj1 = static_cast<btCollisionObject*>(colObj1Wrap->getCollisionObject()->getUserPointer());
+        
+        auto userindex0 = obj0->getUserIndex();
+        auto userindex1 = obj1->getUserIndex();
+        if (userindex0 == 5 && userindex1 == 6 || userindex0 == 6 && userindex1 == 5)
+        {
+            std::cout << "triggered\n";
+            triggered = true;
+        }
+        //std::cout << userindex0 << " " << userindex1 << "\n";
 
+        if (!obj0->isStaticOrKinematicObject() && obj1->isStaticOrKinematicObject())
+        {
+            auto& wt = obj0->getWorldTransform();
+            auto origin = wt.getOrigin();
+            if (cp.getDistance() < 0.0005f)
+            {
+                wt.setOrigin(origin + abs(cp.getDistance()) * cp.m_normalWorldOnB * 1.002);
+                //std::cout << cp.m_normalWorldOnB.length() << "  " << "negative dist\n";
+            }
+            
 
+        }
+        if (!obj1->isStaticOrKinematicObject() && obj0->isStaticOrKinematicObject())
+        {
+            auto& wt = obj1->getWorldTransform();
+            auto origin = wt.getOrigin(); 
+            if (cp.getDistance() < 0.0005f)
+            {
+                wt.setOrigin(origin + abs(cp.getDistance()) * -cp.m_normalWorldOnB * 1.002);
+                //std::cout << "negative dist\n";
+            }
+            //wt.setOrigin(btVector3(origin.x() - cp.getDistance(), origin.y(), origin.z()));
+        }
+
+        return 0;
+    }
+};
 
 
 bool keys[1024];
@@ -118,6 +162,8 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
     // build and compile our shader zprogram
@@ -126,8 +172,12 @@ int main()
     shaderManager.loadShader("box", "3d1st.vert", "5.1.transform.frag");
     shaderManager.loadShader("terrain", "terrain.vert", "terrain.frag", nullptr, "terrain.tesc", "terrain.tese");
     shaderManager.loadShader("defaultmodel", "tree1.vert", "tree1.frag");
+    shaderManager.loadShader("background", "tree1.vert", "transparent.frag");
+    shaderManager.loadShader("trigger", "tree1.vert", "colorshader.frag");
     shaderManager.setDefaultShader("defaultmodel");
     shaderManager.setMaterial("defaultmodel", "Material");
+    shaderManager.setMaterial("background", "Material2");
+    shaderManager.setMaterial("trigger", "Material3");
 
 
 
@@ -153,12 +203,13 @@ int main()
     //std::string mdlpath("resources\\models\\tent.gltf");
     //std::string mdlpath("resources\\models\\platform.gltf");
     std::string mdlpath4("resources\\models\\pushblock.gltf");
+    std::string mdlpath5("resources\\models\\trigger.gltf");
     std::string mdlpath3("resources\\models\\needle.gltf");
     std::string mdlpath2("resources\\models\\guyatt2fix.gltf");
     std::string mdlpath("resources\\models\\block.gltf");
     std::string defaultblockpath("resources\\models\\defaultblock.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("newmap.csv");
+    auto level = loader.loadFromFile("newmap2.csv");
 
 
     btDefaultCollisionConfiguration* collisionConfiguration = new
@@ -175,6 +226,7 @@ int main()
         overlappingPairCache, solver, collisionConfiguration);
 
     dynamicsWorld->setGravity(btVector3(0., -10.0, 0.));
+    
 
     //btCollisionShape* meshshape = new btBvhTriangleMeshShape();
 
@@ -204,13 +256,21 @@ int main()
     GameModel kidmodel;
     kidmodel.loadFromFile(mdlpath2);
     kidmodel.bind();
-    kidmodel.setCustomCollider(btVector3(0.5, 0.3, 0.5));
+    kidmodel.setCustomCollider(std::make_unique<btCapsuleShape>(0.25, 0.5));
     GameModel spikemodel;
     spikemodel.loadFromFile(mdlpath3);
     spikemodel.bind();
-    spikemodel.setColliderFromMesh();
+    spikemodel.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.5, 0.5, 0.5 }));
+
+    GameModel trigger;
+    trigger.loadFromFile(mdlpath5);
+    trigger.bind();
+    trigger.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.6, 0.6, 0.6 }));
+    
+    
 
     GameModel defaultblockmodel;
+    
     defaultblockmodel.loadFromFile(defaultblockpath);
     defaultblockmodel.bind();
     defaultblockmodel.setCustomCollider(btVector3(12.5, 9.5, 0.5));
@@ -219,25 +279,25 @@ int main()
     GameModel pushblockmodel;
     pushblockmodel.loadFromFile(mdlpath4);
     pushblockmodel.bind();
-    pushblockmodel.setColliderFromMesh();
+    pushblockmodel.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.475, 0.475, 0.475 }));
     
 
     auto boxes = std::vector<GameObject*>();
 
-    //GameObject* background = new GameObject(defaultblockmodel);
-    //boxes.push_back(background);
-    //
-    //background->normalizeSize();
-    //background->getTransform().scale(glm::vec3(25., 19., 1.));
-    //background->getTransform().translate(glm::vec3(12., 21., -1.0));
-    //background->setCustomCollider(Transform::glmTobtVec3(background->getTransform().getTranslate()), btScalar(0.0), btScalar(0.0));
-    //background->addColliderToDynamicsWorld(dynamicsWorld);
+    GameObject* background = new GameObject(defaultblockmodel);
+    boxes.push_back(background);
+    
+    background->normalizeSize();
+    background->getTransform().scale(glm::vec3(25., 19., 1.));
+    background->getTransform().translate(glm::vec3(12., 21., -1.0));
+    background->setCustomCollider(Transform::glmTobtVec3(background->getTransform().getTranslate()), btScalar(0.0), btScalar(0.0));
+    background->addColliderToDynamicsWorld(dynamicsWorld);
     
     boxes.reserve(20);
     kidsprite = nullptr;
 
-    
-
+    std::vector<GameObject*> pushblocks;
+    std::vector<GameObject*> triggers;
 
 
     for (size_t i = 0; i < level.size(); i++)
@@ -251,13 +311,20 @@ int main()
             break;
         case(1):
             object = new GameObject(spikemodel);
-            break;
+            break; 
         case(2):
             object = new GameObject(kidmodel);
             kidsprite = object;
             break;
         case(4):
             object = new GameObject(pushblockmodel);
+            pushblocks.push_back(object);
+            
+            break;
+        case(5):
+            object = new GameObject(trigger);
+            object->triggercolor = { 0, 0.7, 0.7, 0.6 };
+            //object->getTransform().scale({ 1.1, 1.1, 1.1 });
             break;
         default:
             break;
@@ -271,27 +338,53 @@ int main()
         else if (level[i].second == 4)
         {
             object->setCustomCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()), btScalar(0.1), btScalar(2.0));
+            
+        }
+        else if (level[i].second == 5) {
+            object->setCustomTriggerCollider(Transform::glmTobtVec3(object->getTransform().getTranslate()));
         }
         else
         {
             object->setBoxColliderFromMesh();
         }
+        //if (level[i].second == 1)
+        //{
+        //    object->getTransform().scale({ 5., 5., 5. });
+        //    object->getTransform().translate({ 0., -0.3, 0. });
+        //}
         
         object->normalizeSize();
         object->addColliderToDynamicsWorld(dynamicsWorld);
+        if (level[i].second == 4) {
+            object->setUserIndex(6);
+        }
+        if (level[i].second == 5)
+        {
+            object->getTransform().scale({ 1.2, 1.2, 1.2 });
+        }
+        if (level[i].second != 5)
+        {
+            boxes.push_back(object);
+        }
+        else
+        {
+            triggers.push_back(object);
+        }
         
-
-        boxes.push_back(object);
         
     }
-
+    //auto trig1 = new GameObject(trigger);
+    //trig1->setCustomTriggerCollider(Transform::glmTobtVec3(boxes[5]->getTransform().getTranslate()));
+    //triggers.push_back(trig1);
+    //trig1->triggercolor = { 0, 0.7, 0.7, 0.6 };
+    //trig1->addColliderToDynamicsWorld(dynamicsWorld);
 
     cam = Camera::getDefault();
 
     int hmapsize = 16;
     Terrain terrain(shaderManager.getShader("terrain"), hmapsize, 16, texture8, 6969);
     
-
+    
     
 
     //terrain.loadChunk(0, 0);
@@ -329,7 +422,7 @@ int main()
         if (currt - delaytime > 0.2f) {
             delaytime = currt;
             
-            //std::cout << "\n";
+            std::cout << "\n";
             //std::cout << dynamicsWorld->getNumCollisionObjects() << std::endl;
            
         }
@@ -343,21 +436,59 @@ int main()
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        
+        terrain.draw(currt, cam);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        terrain.move(glm::vec3(10 * dts, 0., 0.));
+        
+
         for (const auto& obj : boxes) {
+            obj->draw(cam);
+        }
+        for (const auto& obj: triggers)
+        {
             obj->draw(cam);
         }
         cam.tick(dts);
         //kid.draw(cam);
 
-        terrain.draw(currt, cam);
-        terrain.move(glm::vec3(10 * dts, 0., 0.));
+        
         
         glClear(GL_DEPTH_BUFFER_BIT);
         debugDrawer.setMVP(glm::mat4(1.0), cam.view(), cam.projection());
         
-       
+        
+        rCallBack rcallback;
+        dynamicsWorld->contactTest(kidsprite->getCollisionBody(), rcallback);
         dynamicsWorld->stepSimulation(dts, 1, 1.0 / 50);
-        dynamicsWorld->applyGravity();
+        for (auto& trigger : triggers) {
+            dynamicsWorld->contactTest(trigger->getCollisionBody(), rcallback);
+            if (triggered)
+            {
+                trigger->blocktimer = 0.1;
+                triggered = false;
+            }
+        }
+
+        for (auto& trigger : triggers) 
+        {
+            if (trigger->blocktimer > 0)
+            {
+                trigger->triggercolor = { 0.1, 0.9, 0.2, 0.6 };
+                trigger->blocktimer -= dts;
+            }
+            else
+            {
+                trigger->triggercolor = { 0.6, 0.6, 0.1, 0.6 };
+                trigger->blocktimer = 0;
+            }
+
+        }
+       
+        
+        //dynamicsWorld->
+        //dynamicsWorld->applyGravity();
         
         for (const auto& box : boxes) {
             if (!box->isKinematic())
@@ -368,6 +499,11 @@ int main()
         if (debugdraw)
         {
             dynamicsWorld->debugDrawWorld();
+        }
+        for (auto& pushblock : pushblocks) {
+            const auto grav = dynamicsWorld->getGravity().normalized().absolute();
+            const auto vel = pushblock->getVelocity();
+            pushblock->setVelocity(glm::vec3(vel.x * grav.x(), vel.y * grav.y(), vel.z * grav.z()));
         }
         
         

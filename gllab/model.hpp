@@ -36,6 +36,7 @@ public:
 	void setColliderFromMesh();
 
 	void setCustomCollider(btVector3 dimensions);
+	void setCustomCollider(std::unique_ptr<btCollisionShape> shape);
 
 	btCollisionShape* getCollisionShape();
 
@@ -45,13 +46,13 @@ public:
 
 	void bind();
 
-	void drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform) const;
+	void drawMesh(tinygltf::Mesh& mesh, const Camera& camera, const tinygltf::Node& node, const Transform& transform, glm::vec4 triggercolor) const;
 
-	void drawModelNodes(tinygltf::Node& node, const Camera& camera, const Transform& transform) const;
+	void drawModelNodes(tinygltf::Node& node, const Camera& camera, const Transform& transform, glm::vec4 triggercolor) const;
 
-	void draw(const Camera& camera) const;
+	void draw(const Camera& camera, glm::vec4 triggercolor) const;
 
-	void draw(const Camera& camera, const Transform& transform) const;
+	void draw(const Camera& camera, const Transform& transform, glm::vec4 triggercolor) const;
 
 	void dbgModel();
 

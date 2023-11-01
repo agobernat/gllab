@@ -48,3 +48,26 @@ unsigned int ResourceManager::LoadTexture(const char* filename, int dest_color, 
 	stbi_image_free(data);
 	return texture;
 }
+
+unsigned int ResourceManager::MakeTextureFromColor(glm::vec4 color)
+{
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// load image, create texture and generate mipmaps
+	int width, height, nrChannels;
+
+	float clr[4] = { color.x, color.y, color.z, color.w };
+
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, clr);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	return texture;
+}

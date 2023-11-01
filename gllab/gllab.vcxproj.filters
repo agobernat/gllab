@@ -166,6 +166,12 @@
     <None Include="lineshader.frag">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="transparent.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="colorshader.frag">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="level1.txt">

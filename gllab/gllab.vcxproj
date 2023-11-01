@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)\include\bullet;$(ProjectDir)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\lib\dbg;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -190,6 +190,7 @@
     <None Include="3d1st.vert" />
     <None Include="5.1.transform.frag" />
     <None Include="5.1.transform.vert" />
+    <None Include="colorshader.frag" />
     <None Include="lineshader.frag" />
     <None Include="lineshader.vert" />
     <None Include="terrain.frag" />
@@ -197,6 +198,7 @@
     <None Include="terrain.tesc" />
     <None Include="terrain.tese" />
     <None Include="terrain.vert" />
+    <None Include="transparent.frag" />
     <None Include="tree1.frag" />
     <None Include="tree1.vert" />
   </ItemGroup>
