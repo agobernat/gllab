@@ -67,10 +67,8 @@ struct rCallBack : public btCollisionWorld::ContactResultCallback
         auto userindex1 = obj1->getUserIndex();
         if (userindex0 == 5 && userindex1 == 6 || userindex0 == 6 && userindex1 == 5)
         {
-            std::cout << "triggered\n";
             triggered = true;
         }
-        //std::cout << userindex0 << " " << userindex1 << "\n";
 
         if (!obj0->isStaticOrKinematicObject() && obj1->isStaticOrKinematicObject())
         {
@@ -79,10 +77,7 @@ struct rCallBack : public btCollisionWorld::ContactResultCallback
             if (cp.getDistance() < 0.0005f)
             {
                 wt.setOrigin(origin + abs(cp.getDistance()) * cp.m_normalWorldOnB * 1.002);
-                //std::cout << cp.m_normalWorldOnB.length() << "  " << "negative dist\n";
             }
-            
-
         }
         if (!obj1->isStaticOrKinematicObject() && obj0->isStaticOrKinematicObject())
         {
@@ -91,11 +86,8 @@ struct rCallBack : public btCollisionWorld::ContactResultCallback
             if (cp.getDistance() < 0.0005f)
             {
                 wt.setOrigin(origin + abs(cp.getDistance()) * -cp.m_normalWorldOnB * 1.002);
-                //std::cout << "negative dist\n";
             }
-            //wt.setOrigin(btVector3(origin.x() - cp.getDistance(), origin.y(), origin.z()));
         }
-
         return 0;
     }
 };
@@ -539,12 +531,31 @@ void processInput(GLFWwindow *window)
         auto vel = kidsprite->getVelocity();
         vel.x = -4.5;
         kidsprite->setVelocity(vel);
+        if (!flipped)
+        {
+            kidsprite->getTransform().setRotation(3.1415, {0., 1., 0. });
+        }
+        else
+        {
+            kidsprite->getTransform().setRotation(-3.1415 / 2, { -1., 0., 0. });
+            kidsprite->getTransform().rotate(3.1415, { 0., 1., 0. });
+        }
+        
 	}
 	else if (keys[GLFW_KEY_RIGHT])
 	{
         auto vel = kidsprite->getVelocity();
         vel.x = 4.5;
         kidsprite->setVelocity(vel);
+
+        if (!flipped)
+        {
+            kidsprite->getTransform().setRotation(0, { 0., 1., 0. });
+        }
+        else
+        {
+            kidsprite->getTransform().setRotation(-3.1415 / 2, { -1., 0., 0. });
+        }
 	}
     else
     {
@@ -560,6 +571,9 @@ void processInput(GLFWwindow *window)
             auto vel = kidsprite->getVelocity();
             vel.y = 4.5;
             kidsprite->setVelocity(vel);
+            kidsprite->getTransform().setRotation(-3.1415 / 2, { -1., 0., 0. });
+            kidsprite->getTransform().rotate(3.1415 / 2, { 0., 1., 0. });
+            
         }
         
     }
@@ -570,6 +584,8 @@ void processInput(GLFWwindow *window)
             auto vel = kidsprite->getVelocity();
             vel.y = -4.5;
             kidsprite->setVelocity(vel);
+            kidsprite->getTransform().setRotation(-3.1415 / 2, { -1., 0., 0. });
+            kidsprite->getTransform().rotate(-3.1415 / 2, { 0., 1., 0. });
         }
 
     }
@@ -622,12 +638,13 @@ void processInput(GLFWwindow *window)
             {
                 cam.linearMove(glm::vec3(12.0f, 20.0f, 32.0f), glm::vec3(0.0f, 0.0f, -1.0f), 1.);
                 dynamicsWorld->setGravity(btVector3(0., -10., 0.));
-                
+                kidsprite->getTransform().setRotation(3.1415 / 2, { -1., 0., 0. });
             }
             else
             {
                 cam.linearMove(glm::vec3(12.0f, 8.0f, 15.0f), glm::vec3(0.0f, 0.7f, -1.0f), 1.);
                 dynamicsWorld->setGravity(btVector3(0., 0., -10.));
+                kidsprite->getTransform().setRotation(-3.1415 / 2, { -1., 0., 0. });
             }
             flipped = !flipped;
         }
