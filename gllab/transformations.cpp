@@ -74,19 +74,57 @@ struct rCallBack : public btCollisionWorld::ContactResultCallback
         {
             auto& wt = obj0->getWorldTransform();
             auto origin = wt.getOrigin();
-            if (cp.getDistance() < 0.0005f)
+            if (cp.getDistance() < 0.0001f)
             {
-                wt.setOrigin(origin + abs(cp.getDistance()) * cp.m_normalWorldOnB * 1.002);
+                wt.setOrigin(origin + abs(cp.getDistance()) * cp.m_normalWorldOnB * 1.0001);
             }
         }
         if (!obj1->isStaticOrKinematicObject() && obj0->isStaticOrKinematicObject())
         {
             auto& wt = obj1->getWorldTransform();
             auto origin = wt.getOrigin(); 
-            if (cp.getDistance() < 0.0005f)
+            if (cp.getDistance() < 0.0001f)
             {
-                wt.setOrigin(origin + abs(cp.getDistance()) * -cp.m_normalWorldOnB * 1.002);
+                wt.setOrigin(origin + abs(cp.getDistance()) * -cp.m_normalWorldOnB * 1.0001);
             }
+        }
+        return 0;
+    }
+};
+
+struct pbCallback : public btCollisionWorld::ContactResultCallback
+{
+    inline virtual btScalar addSingleResult(btManifoldPoint& cp, const btCollisionObjectWrapper* colObj0Wrap,
+        int partId0, int index0, const btCollisionObjectWrapper* colObj1Wrap, int partId1, int index1)
+    {
+        auto obj0 = static_cast<btRigidBody*>(colObj0Wrap->getCollisionObject()->getUserPointer());
+        auto obj1 = static_cast<btCollisionObject*>(colObj1Wrap->getCollisionObject()->getUserPointer());
+
+        auto userindex0 = obj0->getUserIndex();
+        auto userindex1 = obj1->getUserIndex();
+        if (userindex0 != 6)
+        {
+            return 0;
+        }
+
+        if (obj1->isStaticOrKinematicObject())
+        {
+            auto& wt = obj0->getWorldTransform();
+            auto origin = wt.getOrigin();
+            auto mvvec = obj0->getWorldTransform().getOrigin() - obj1->getWorldTransform().getOrigin();
+            mvvec.normalize();
+            const auto dist = cp.getDistance();
+            std::cout << dist << '\n';
+            if (dist < 0.001f)
+            {
+                obj0->applyCentralImpulse(0.002 * cp.m_normalWorldOnB);
+                //wt.setOrigin(origin + abs(cp.getDistance()) * mvvec * 1.0001);
+            }
+            else
+            {
+                obj0->applyCentralImpulse(abs(dist) * cp.m_normalWorldOnB * 0.025);
+            }
+            
         }
         return 0;
     }
@@ -201,7 +239,7 @@ int main()
     std::string mdlpath("resources\\models\\block.gltf");
     std::string defaultblockpath("resources\\models\\defaultblock.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("newmap2.csv");
+    auto level = loader.loadFromFile("level01.csv");
 
 
     btDefaultCollisionConfiguration* collisionConfiguration = new
@@ -257,7 +295,7 @@ int main()
     GameModel trigger;
     trigger.loadFromFile(mdlpath5);
     trigger.bind();
-    trigger.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.6, 0.6, 0.6 }));
+    trigger.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.45, 0.45, 0.45 }));
     
     
 
@@ -452,8 +490,9 @@ int main()
         
         
         rCallBack rcallback;
+        pbCallback pbcallback;
         dynamicsWorld->contactTest(kidsprite->getCollisionBody(), rcallback);
-        dynamicsWorld->stepSimulation(dts, 1, 1.0 / 50);
+        
         for (auto& trigger : triggers) {
             dynamicsWorld->contactTest(trigger->getCollisionBody(), rcallback);
             if (triggered)
@@ -462,7 +501,15 @@ int main()
                 triggered = false;
             }
         }
-
+        for (auto& pb : pushblocks)
+        {
+            dynamicsWorld->contactTest(pb->getCollisionBody(), pbcallback);
+            btVector3 vectest{ 1., 0., 0. };
+            vectest = vectest.rotate({ 0., 0., 1. }, (rand() % 100) * 3.1415 * 2 / 100);
+            std::cout << vectest.x() << " " << vectest.y() << " " << vectest.z() << "\n";
+            //static_cast<btRigidBody*>(pb->getCollisionBody())->applyCentralImpulse(vectest * 0.006);
+        }
+        dynamicsWorld->stepSimulation(dts, 1, 1.0 / 50);
         for (auto& trigger : triggers) 
         {
             if (trigger->blocktimer > 0)
@@ -638,7 +685,7 @@ void processInput(GLFWwindow *window)
             {
                 cam.linearMove(glm::vec3(12.0f, 20.0f, 32.0f), glm::vec3(0.0f, 0.0f, -1.0f), 1.);
                 dynamicsWorld->setGravity(btVector3(0., -10., 0.));
-                kidsprite->getTransform().setRotation(3.1415 / 2, { -1., 0., 0. });
+                kidsprite->getTransform().setRotation(glm::dmat4(1.));
             }
             else
             {
