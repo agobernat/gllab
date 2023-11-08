@@ -239,7 +239,7 @@ int main()
     std::string mdlpath("resources\\models\\block.gltf");
     std::string defaultblockpath("resources\\models\\defaultblock.gltf");
     LevelLoader loader;
-    auto level = loader.loadFromFile("level01.csv");
+    auto level = loader.loadFromFile("level02.csv");
 
 
     btDefaultCollisionConfiguration* collisionConfiguration = new
