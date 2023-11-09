@@ -115,14 +115,14 @@ struct pbCallback : public btCollisionWorld::ContactResultCallback
             mvvec.normalize();
             const auto dist = cp.getDistance();
             std::cout << dist << '\n';
-            if (dist < 0.001f)
+            if (dist < 0.f)
             {
-                obj0->applyCentralImpulse(0.002 * cp.m_normalWorldOnB);
+                obj0->applyCentralImpulse(0.02 * cp.m_normalWorldOnB);
                 //wt.setOrigin(origin + abs(cp.getDistance()) * mvvec * 1.0001);
             }
             else
             {
-                obj0->applyCentralImpulse(abs(dist) * cp.m_normalWorldOnB * 0.025);
+                obj0->applyCentralImpulse(abs(dist) * cp.m_normalWorldOnB * 0.01);
             }
             
         }
@@ -309,7 +309,7 @@ int main()
     GameModel pushblockmodel;
     pushblockmodel.loadFromFile(mdlpath4);
     pushblockmodel.bind();
-    pushblockmodel.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.475, 0.475, 0.475 }));
+    pushblockmodel.setCustomCollider(std::make_unique<btBoxShape>(btVector3{ 0.45, 0.45, 0.45 }));
     
 
     auto boxes = std::vector<GameObject*>();
@@ -412,7 +412,7 @@ int main()
     cam = Camera::getDefault();
 
     int hmapsize = 16;
-    Terrain terrain(shaderManager.getShader("terrain"), hmapsize, 16, texture8, 6969);
+    Terrain terrain(shaderManager.getShader("terrain"), hmapsize, 16, texture8, 135);
     
     
     
@@ -468,7 +468,7 @@ int main()
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         
-        terrain.draw(currt, cam);
+        //terrain.draw(currt, cam);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         terrain.move(glm::vec3(10 * dts, 0., 0.));
         
@@ -507,7 +507,7 @@ int main()
             btVector3 vectest{ 1., 0., 0. };
             vectest = vectest.rotate({ 0., 0., 1. }, (rand() % 100) * 3.1415 * 2 / 100);
             std::cout << vectest.x() << " " << vectest.y() << " " << vectest.z() << "\n";
-            //static_cast<btRigidBody*>(pb->getCollisionBody())->applyCentralImpulse(vectest * 0.006);
+            //static_cast<btRigidBody*>(pb->getCollisionBody())->applyCentralImpulse(vectest * 0.002);
         }
         dynamicsWorld->stepSimulation(dts, 1, 1.0 / 50);
         for (auto& trigger : triggers) 

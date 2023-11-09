@@ -1,8 +1,7 @@
 #version 410 core
-
+#extension GL_ARB_explicit_uniform_location : enable
 layout (location = 0) in vec2 aPos;
 layout (location = 0) out vec2 TexCoord;
-#extension GL_ARB_explicit_uniform_location : enable
 layout (location = 0) uniform int hmapsize;
 
 

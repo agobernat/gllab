@@ -1,7 +1,7 @@
 #version 410 core
+#extension GL_ARB_explicit_uniform_location : enable
 layout(quads, fractional_odd_spacing, ccw) in;
 
-#extension GL_ARB_explicit_uniform_location : enable
 
 uniform sampler2D hmap;
 layout (location = 0) uniform int hmapsize;

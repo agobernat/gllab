@@ -1,8 +1,8 @@
 #version 410 core
-
+#extension GL_ARB_explicit_uniform_location : enable
 layout(vertices=4) out;
 
-#extension GL_ARB_explicit_uniform_location : enable
+
 
 layout (location = 1) uniform mat4 model;
 layout (location = 2) uniform mat4 view;
